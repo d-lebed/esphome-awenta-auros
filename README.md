@@ -18,9 +18,9 @@ An ESPHome external component for **Awenta Pro Auros** heat-recovery ventilation
 ## Tested Hardware & Compatibility
 
 ### Tested & Verified On
-- **Recuperator Unit:** **Awenta Pro Auros 305** (`AWP.VER` / `VAVP` series)
-- **Internal Controller Board:** **Compit Aero 4A2** (`AERO 4A ver.2`, C14 bus address `99`)
-- **Display / Master Panel:** **Compit NANO COLOR 2** (firmware **v6.02**, C14 bus address `41` in `Master` mode)
+- **Awenta Pro Auros 305** heat-recovery ventilation unit, which comes factory-equipped with:
+  - **Compit Aero 4A2** (`AERO 4A ver.2`) internal controller board (C14 bus address `99`)
+  - **Compit NANO COLOR 2** (firmware **v6.02**) built-in touch display panel acting as the C14 bus `Master` (address `41`)
 
 ### Expected to Work With (Untested)
 Because Awenta Pro and several other Polish HVAC brands use the same OEM **Compit Aero 4A2** controller and **Compit NANO COLOR 2** panel, this component should also be compatible with:
