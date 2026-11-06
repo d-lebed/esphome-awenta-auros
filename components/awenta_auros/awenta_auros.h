@@ -31,6 +31,9 @@
 #ifdef USE_CLIMATE
 #include "esphome/components/climate/climate.h"
 #endif
+#ifdef USE_FAN
+#include "esphome/components/fan/fan.h"
+#endif
 
 #include <array>
 #include <cmath>
@@ -57,6 +60,26 @@ class AwentaAurosClimate : public climate::Climate, public Component {
   void control(const climate::ClimateCall &call) override;
 
   AwentaAurosComponent *parent_{nullptr};
+};
+#endif
+
+#ifdef USE_FAN
+class AwentaAurosFan : public fan::Fan, public Component {
+ public:
+  AwentaAurosFan();
+
+  void set_parent(AwentaAurosComponent *parent) { this->parent_ = parent; }
+
+  fan::FanTraits get_traits() override;
+  void apply_bus_fan_mode(int32_t fs);
+  void apply_bus_active_gear(uint8_t active_gear);
+
+ protected:
+  void control(const fan::FanCall &call) override;
+
+  AwentaAurosComponent *parent_{nullptr};
+  fan::FanTraits traits_{false, true, false, 3};
+  uint8_t last_active_gear_{1};
 };
 #endif
 
@@ -171,6 +194,14 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
     }
   }
 #endif
+#ifdef USE_FAN
+  void set_fan(AwentaAurosFan *f) {
+    this->fan_ = f;
+    if (f != nullptr) {
+      f->set_parent(this);
+    }
+  }
+#endif
 
   static std::string fan_mode_to_string(int32_t mode);
   static int32_t fan_mode_from_string(const std::string &option);
@@ -229,6 +260,9 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
 #endif
 #ifdef USE_CLIMATE
   AwentaAurosClimate *climate_{nullptr};
+#endif
+#ifdef USE_FAN
+  AwentaAurosFan *fan_{nullptr};
 #endif
 
   bool tx_scheduled_{false};

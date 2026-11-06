@@ -46,6 +46,10 @@ climate:
   - platform: awenta_auros
     name: "Recuperator"
 
+fan:
+  - platform: awenta_auros
+    name: "Recuperator Fan"
+
 select:
   - platform: awenta_auros
     fan_mode:

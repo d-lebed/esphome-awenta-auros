@@ -60,6 +60,7 @@ namespace esphome::awenta_auros
     traits.set_supported_modes({
         climate::CLIMATE_MODE_HEAT,
         climate::CLIMATE_MODE_COOL,
+        climate::CLIMATE_MODE_HEAT_COOL,
         climate::CLIMATE_MODE_FAN_ONLY,
     });
     traits.set_supported_fan_modes({
@@ -94,7 +95,7 @@ namespace esphome::awenta_auros
         {
           this->parent_->set_desired_season_mode(0); // Winter
         }
-        else if (mode == climate::CLIMATE_MODE_FAN_ONLY)
+        else if (mode == climate::CLIMATE_MODE_HEAT_COOL || mode == climate::CLIMATE_MODE_FAN_ONLY)
         {
           this->parent_->set_desired_season_mode(1); // Summer
         }
@@ -170,6 +171,148 @@ namespace esphome::awenta_auros
     }
 
     this->publish_state();
+  }
+#endif
+
+#ifdef USE_FAN
+  AwentaAurosFan::AwentaAurosFan()
+  {
+    this->set_supported_preset_modes({"Auto", "Party"});
+  }
+
+  fan::FanTraits AwentaAurosFan::get_traits()
+  {
+    this->wire_preset_modes_(this->traits_);
+    return this->traits_;
+  }
+
+  void AwentaAurosFan::apply_bus_fan_mode(int32_t fs)
+  {
+    switch (fs)
+    {
+    case 0: // Off
+      this->state = false;
+      this->clear_preset_mode_();
+      break;
+    case 1: // Speed 1
+      this->state = true;
+      this->speed = 1;
+      this->clear_preset_mode_();
+      break;
+    case 2: // Speed 2
+      this->state = true;
+      this->speed = 2;
+      this->clear_preset_mode_();
+      break;
+    case 3: // Speed 3
+      this->state = true;
+      this->speed = 3;
+      this->clear_preset_mode_();
+      break;
+    case 4: // Party
+      this->state = true;
+      if (this->speed <= 0)
+        this->speed = this->last_active_gear_;
+      this->set_preset_mode_("Party");
+      break;
+    case 5: // Schedule / Auto
+      this->state = true;
+      if (this->speed <= 0)
+        this->speed = this->last_active_gear_;
+      this->set_preset_mode_("Auto");
+      break;
+    default:
+      break;
+    }
+  }
+
+  void AwentaAurosFan::apply_bus_active_gear(uint8_t active_gear)
+  {
+    if (active_gear >= 1 && active_gear <= 3)
+    {
+      this->last_active_gear_ = active_gear;
+      if (this->has_preset_mode())
+      {
+        this->speed = active_gear;
+      }
+    }
+  }
+
+  void AwentaAurosFan::control(const fan::FanCall &call)
+  {
+    if (call.has_preset_mode())
+    {
+      const char *preset = call.get_preset_mode();
+      this->state = true;
+      this->set_preset_mode_(preset);
+      if (this->parent_ != nullptr)
+      {
+        if (strcmp(preset, "Auto") == 0)
+        {
+          this->parent_->set_desired_fan_mode_index(5); // Schedule
+        }
+        else if (strcmp(preset, "Party") == 0)
+        {
+          this->parent_->set_desired_fan_mode_index(4); // Party
+        }
+      }
+      this->publish_state();
+      return;
+    }
+
+    if (call.get_state().has_value() && !*call.get_state())
+    {
+      this->state = false;
+      this->clear_preset_mode_();
+      if (this->parent_ != nullptr)
+      {
+        this->parent_->set_desired_fan_mode_index(0); // Off
+      }
+      this->publish_state();
+      return;
+    }
+
+    if (call.get_speed().has_value())
+    {
+      int spd = *call.get_speed();
+      if (spd <= 0)
+      {
+        this->state = false;
+        this->clear_preset_mode_();
+        if (this->parent_ != nullptr)
+        {
+          this->parent_->set_desired_fan_mode_index(0);
+        }
+      }
+      else
+      {
+        if (spd > 3)
+          spd = 3;
+        this->state = true;
+        this->speed = spd;
+        this->clear_preset_mode_();
+        if (this->parent_ != nullptr)
+        {
+          this->parent_->set_desired_fan_mode_index((size_t)spd);
+        }
+      }
+      this->publish_state();
+      return;
+    }
+
+    if (call.get_state().has_value() && *call.get_state())
+    {
+      this->state = true;
+      if (!this->has_preset_mode())
+      {
+        this->set_preset_mode_("Auto");
+        if (this->parent_ != nullptr)
+        {
+          this->parent_->set_desired_fan_mode_index(5); // Schedule
+        }
+      }
+      this->publish_state();
+    }
   }
 #endif
 
@@ -421,6 +564,13 @@ namespace esphome::awenta_auros
           this->climate_->publish_state();
         }
 #endif
+#ifdef USE_FAN
+        if (this->fan_ != nullptr)
+        {
+          this->fan_->apply_bus_fan_mode(current_raw);
+          this->fan_->publish_state();
+        }
+#endif
       }
       else if (reg_id == REG_THERMOSTAT_MODE)
       {
@@ -546,6 +696,13 @@ namespace esphome::awenta_auros
     {
       this->climate_->apply_bus_fan_mode(mode);
       this->climate_->publish_state();
+    }
+#endif
+#ifdef USE_FAN
+    if (this->fan_ != nullptr)
+    {
+      this->fan_->apply_bus_fan_mode(mode);
+      this->fan_->publish_state();
     }
 #endif
   }
@@ -800,6 +957,13 @@ namespace esphome::awenta_auros
 #endif
 
     uint8_t raw_fs = rx_buffer[28] & 0x07;
+    uint8_t active_gear = (raw_fs == 3) ? 1 : ((raw_fs == 5) ? 2 : ((raw_fs == 7) ? 3 : 0));
+#ifdef USE_FAN
+    if (this->fan_ != nullptr && active_gear > 0)
+    {
+      this->fan_->apply_bus_active_gear(active_gear);
+    }
+#endif
 #ifdef USE_TEXT_SENSOR
     if (this->master_fan_speed_text_sensor_ != nullptr)
     {
@@ -838,7 +1002,7 @@ namespace esphome::awenta_auros
         }
         else if (season_idx == 1)
         {
-          this->climate_->mode = climate::CLIMATE_MODE_FAN_ONLY;
+          this->climate_->mode = climate::CLIMATE_MODE_HEAT_COOL;
         }
         else
         {
