@@ -11,7 +11,23 @@ An ESPHome external component for **Awenta Pro Auros** heat-recovery ventilation
 - **Native Home Assistant `climate` Entity:**
   Exposes a full thermostat card with room temperature, room humidity, target temperature slider, season modes (`Heat` / `Fan only` / `Cool`), fan modes (`Off` / `Low` / `Medium` / `High` / `Diffuse` / `Auto`), and presets (`Eco` / `Boost` / `Home`).
 - **Complete Sensor & Control Suite:**
-  Dedicated `select`, `switch`, `number`, `sensor`, `binary_sensor`, and `text_sensor` platforms for every recuperator parameter (including Airing, Fireplace mode, GHE pre-heater, Bypass mode, and all 5 temperature setpoints).
+  Dedicated `climate`, `fan`, `select`, `switch`, `number`, `sensor`, `binary_sensor`, and `text_sensor` platforms for every recuperator parameter (including Airing, Fireplace mode, GHE pre-heater, Bypass mode, and all 5 temperature setpoints).
+
+---
+
+## Tested Hardware & Compatibility
+
+### Tested & Verified On
+- **Recuperator Unit:** **Awenta Pro Auros 305** (`AWP.VER` / `VAVP` series)
+- **Internal Controller Board:** **Compit Aero 4A2** (`AERO 4A ver.2`, C14 bus address `99`)
+- **Display / Master Panel:** **Compit NANO COLOR 2** (firmware **v6.02**, C14 bus address `41` in `Master` mode)
+
+### Expected to Work With (Untested)
+Because Awenta Pro and several other Polish HVAC brands use the same OEM **Compit Aero 4A2** controller and **Compit NANO COLOR 2** panel, this component should also be compatible with:
+- **Awenta Pro Auros** series: **Auros 305, 405, 505, 605** (and **Aquila 305** / **Vena** units equipped with the `Aero 4A2` + `NANO COLOR 2` controller set).
+- Other heat-recovery ventilation units built on the **Compit Aero 4 / Aero 4A2** + **Compit NANO COLOR 2** platform over the C14 (`M.Bus`) bus.
+
+*(If you have tested this component with another recuperator model or firmware version, please open an issue or pull request to add it to the list!)*
 
 ---
 
@@ -119,14 +135,26 @@ climate:
 
 | Climate Attribute            | Home Assistant Option                                       | C14 Mapping                                                                                                                                         |
 | ---------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Mode** (Season)            | `Heat`<br>`Fan only`<br>`Cool`                              | Register `64`:<br>`0` = Winter<br>`1` = Summer<br>`2` = Cooling                                                                                     |
+| **Mode** (Season)            | `Heat`<br>`Heat/Cool` (`Auto`) / `Fan only`<br>`Cool`       | Register `64`:<br>`0` = Winter<br>`1` = Summer (mapped to `Heat/Cool` for Apple HomeKit compatibility)<br>`2` = Cooling                             |
 | **Preset** (Thermostat Mode) | `Eco`<br>`Boost`<br>`Home`                                  | Register `88`:<br>`0` = Schedule<br>`1` = Party / Holiday<br>`2` = Manual                                                                           |
 | **Fan Mode**                 | `Off`<br>`Low`<br>`Medium`<br>`High`<br>`Diffuse`<br>`Auto` | Register `80`:<br>`0` = Off (Gear 0)<br>`1` = Speed 1 (Gear 1)<br>`2` = Speed 2 (Gear 2)<br>`3` = Speed 3 (Gear 3)<br>`4` = Party<br>`5` = Schedule |
 | **Target Temperature**       | `10.0 .. 30.0 °C` (step `0.1 °C`)                           | Updates Manual setpoint (Register `6`) and switches Thermostat Mode to `Manual` (Register `88 = 2`)                                                 |
 
 ---
 
-### 3. Selects (`select`)
+### 3. Fan (`fan`)
+
+Provides a dedicated 3-speed fan entity with `Auto` (Schedule) and `Party` preset modes — ideal for **Apple HomeKit** (`Fanv2` service with discrete speeds `33% / 66% / 100%` and `Auto` / `Manual` toggle):
+
+```yaml
+fan:
+  - platform: awenta_auros
+    name: "Recuperator Fan"
+```
+
+---
+
+### 4. Selects (`select`)
 
 ```yaml
 select:
