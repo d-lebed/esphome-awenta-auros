@@ -169,7 +169,7 @@ select:
 
 ---
 
-### 4. Switches (`switch`)
+### 5. Switches (`switch`)
 
 ```yaml
 switch:
@@ -184,7 +184,7 @@ switch:
 
 ---
 
-### 5. Temperature Setpoint Numbers (`number`)
+### 6. Temperature Setpoint Numbers (`number`)
 
 All 5 temperature setpoints support `10.0 .. 30.0 °C` with `0.1 °C` resolution:
 
@@ -205,7 +205,7 @@ number:
 
 ---
 
-### 6. Binary Sensors (`binary_sensor`)
+### 7. Binary Sensors (`binary_sensor`)
 
 ```yaml
 binary_sensor:
@@ -224,7 +224,7 @@ binary_sensor:
 
 ---
 
-### 7. Sensors (`sensor`)
+### 8. Sensors (`sensor`)
 
 All sensors are optional — include only the ones you want in Home Assistant:
 
@@ -275,7 +275,7 @@ sensor:
 
 ---
 
-### 8. Text Sensors (`text_sensor`)
+### 9. Text Sensors (`text_sensor`)
 
 ```yaml
 text_sensor:
