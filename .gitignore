@@ -1,0 +1,48 @@
+# ESPHome & PlatformIO build artifacts
+.esphome/
+.pio/
+.pioenvs/
+.piolibdeps/
+build/
+sdkconfig*
+
+# Secrets & local configs
+secrets.yaml
+*.secret.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# C/C++ & IDE
+.vscode/
+.idea/
+.clangd/
+compile_commands.json
+*.o
+*.obj
+*.a
+*.elf
+*.bin
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+*~
+*.swp
+*.swo
+

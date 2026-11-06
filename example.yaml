@@ -1,0 +1,155 @@
+esphome:
+  name: awenta-auros
+  friendly_name: Awenta Auros
+
+external_components:
+  - source: github://d-lebed/esphome-awenta-auros
+    components: [awenta_auros]
+
+esp32:
+  variant: esp32
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: NONE
+
+time:
+  - platform: homeassistant
+    id: awenta_time
+
+uart:
+  - id: rs485_bus
+    rx_pin: GPIO19 # Connect to RS-485 transceiver RO (Receiver Output)
+    tx_pin: GPIO18 # Connect to RS-485 transceiver DI (Driver Input)
+    baud_rate: 9600
+
+awenta_auros:
+  id: awenta_hub
+  uart_id: rs485_bus
+  flow_control_pin: GPIO21 # Connect to RS-485 transceiver DE + RE pins
+  time_id: awenta_time
+
+climate:
+  - platform: awenta_auros
+    name: "Recuperator"
+
+select:
+  - platform: awenta_auros
+    fan_mode:
+      name: "Fan Mode"
+    thermostat_mode:
+      name: "Thermostat Mode"
+    bypass_mode:
+      name: "Bypass Mode"
+
+switch:
+  - platform: awenta_auros
+    airing:
+      name: "Airing"
+    fireplace:
+      name: "Fireplace"
+    ghe:
+      name: "GHE"
+
+number:
+  - platform: awenta_auros
+    comfort_temperature:
+      name: "Comfort Temperature Setpoint"
+    eco_winter_temperature:
+      name: "Eco Winter Temperature Setpoint"
+    eco_cooling_temperature:
+      name: "Eco Cooling Temperature Setpoint"
+    manual_temperature:
+      name: "Manual Temperature Setpoint"
+    away_temperature:
+      name: "Away Temperature Setpoint"
+
+binary_sensor:
+  - platform: awenta_auros
+    cooling_demand:
+      name: "Cooling Demand"
+    ventilation_mode:
+      name: "Ventilation Mode"
+    bypass_position:
+      name: "Bypass Position"
+    away:
+      name: "Away"
+    fireplace_mode:
+      name: "Fireplace Mode"
+
+sensor:
+  - platform: awenta_auros
+    target_temperature:
+      name: "Target Temperature"
+    room_temperature:
+      name: "Room Temperature"
+    room_humidity:
+      name: "Room Humidity"
+    intake_temperature:
+      name: "Intake Temperature"
+    supply_temperature:
+      name: "Supply Temperature"
+    preheater_temperature:
+      name: "Preheater Temperature"
+    supply_target_temperature:
+      name: "Supply Target Temperature"
+    exhaust_temperature:
+      name: "Exhaust Temperature"
+    extract_temperature:
+      name: "Extract Temperature"
+    target_fan_speed:
+      name: "Target Fan Speed"
+    intake_fan_speed:
+      name: "Intake Fan Speed"
+    supply_fan_speed:
+      name: "Supply Fan Speed"
+    extract_fan_speed:
+      name: "Extract Fan Speed"
+    exhaust_fan_speed:
+      name: "Exhaust Fan Speed"
+    config_intake_temperature:
+      name: "Config Current Intake Temperature"
+    config_comfort_temperature:
+      name: "Config Comfort Temperature"
+    config_eco_winter_temperature:
+      name: "Config Eco Temperature Winter"
+    config_eco_cooling_temperature:
+      name: "Config Eco Temperature Cooling"
+    config_manual_temperature:
+      name: "Config Manual Temperature"
+    config_away_temperature:
+      name: "Config Away Temperature"
+
+text_sensor:
+  - platform: awenta_auros
+    master_fan_speed:
+      name: "Master Fan Speed"
+    season_mode:
+      name: "Season Mode"
+    config_fan_speed:
+      name: "Config Fan Speed"
+    config_thermostat_mode:
+      name: "Config Thermostat Mode"
+    config_bypass_mode:
+      name: "Config Bypass Mode"
+    config_ghe_mode:
+      name: "Config GHE Mode"
+    thermostat_mode:
+      name: "Thermostat Mode"
+    time:
+      name: "Time"
+    day_of_week:
+      name: "Day of Week"
