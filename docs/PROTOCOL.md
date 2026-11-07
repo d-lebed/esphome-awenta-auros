@@ -19,30 +19,30 @@ This document describes the physical layer, frame format, broadcast cycle, and t
 
 Every C14 packet is strictly **30 bytes** long (`f[0]..f[29]`):
 
-| Byte | Value | Description |
-|---:|---|---|
-| `f[0]` | `0x80 + dst_addr` | **Target address** with bit 7 set (`>= 0x80`). **Only `f[0]` in the entire frame has bit 7 set.** All bytes `f[1]..f[29]` are strictly 7-bit (`< 0x80`). |
-| `f[1]` | ASCII char | **Command byte:**<br>- `'!'` (`0x21`): Status / configuration broadcast<br>- `'D'` (`0x44`): Master poll / data query<br>- `'V'` (`0x56`): Secondary poll trigger<br>- `'R'` (`0x52`) / `'r'` (`0x72`): Read parameters request / response<br>- `'W'` (`0x57`) / `'w'` (`0x77`): Write parameters request / response<br>- `'T'` (`0x54`) / `'t'` (`0x74`): Read telemetry request / response |
-| `f[2]` | `0x00..0x7F` | **7-bit Checksum:** `(sum of f[0..29] excluding f[2]) & 0x7F` |
-| `f[3]` | `0x00..0x7F` | **Source address** (plain 7-bit integer, e.g., `41` = `0x29` for Master NANO 1, `99` = `0x63` for AERO, `112` = `0x70` for iNext) |
-| `f[4]` | `0x00..0x7E` | Subtype / reserved byte (`0x00` in R/W/T requests, `0x7E` in R/W/T responses, `0x39`/`0x3A`/`0x3B` in `E3 44` pages) |
-| `f[5..28]` | 24 bytes | Payload (positional fields for `'!'`/`'D'`, or 6 register slots of 4 bytes each for `'R'`/`'W'`/`'T'`) |
-| `f[29]` | `0x23` (`'#'`) | **Frame terminator** |
+|       Byte | Value             | Description                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------: | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|     `f[0]` | `0x80 + dst_addr` | **Target address** with bit 7 set (`>= 0x80`). **Only `f[0]` in the entire frame has bit 7 set.** All bytes `f[1]..f[29]` are strictly 7-bit (`< 0x80`).                                                                                                                                                                                                                                     |
+|     `f[1]` | ASCII char        | **Command byte:**<br>- `'!'` (`0x21`): Status / configuration broadcast<br>- `'D'` (`0x44`): Master poll / data query<br>- `'V'` (`0x56`): Secondary poll trigger<br>- `'R'` (`0x52`) / `'r'` (`0x72`): Read parameters request / response<br>- `'W'` (`0x57`) / `'w'` (`0x77`): Write parameters request / response<br>- `'T'` (`0x54`) / `'t'` (`0x74`): Read telemetry request / response |
+|     `f[2]` | `0x00..0x7F`      | **7-bit Checksum:** `(sum of f[0..29] excluding f[2]) & 0x7F`                                                                                                                                                                                                                                                                                                                                |
+|     `f[3]` | `0x00..0x7F`      | **Source address** (plain 7-bit integer, e.g., `41` = `0x29` for Master NANO 1, `99` = `0x63` for AERO, `112` = `0x70` for iNext)                                                                                                                                                                                                                                                            |
+|     `f[4]` | `0x00..0x7E`      | Subtype / reserved byte (`0x00` in R/W/T requests, `0x7E` in R/W/T responses, `0x39`/`0x3A`/`0x3B` in `E3 44` pages)                                                                                                                                                                                                                                                                         |
+| `f[5..28]` | 24 bytes          | Payload (positional fields for `'!'`/`'D'`, or 6 register slots of 4 bytes each for `'R'`/`'W'`/`'T'`)                                                                                                                                                                                                                                                                                       |
+|    `f[29]` | `0x23` (`'#'`)    | **Frame terminator**                                                                                                                                                                                                                                                                                                                                                                         |
 
 ### Known C14 Device Addresses
 
-| Address (Dec) | Address (Hex) | Frame Header `f[0]` (`+128`) | Role |
-|---:|---:|---:|---|
-| `41` | `0x29` | `0xA9` | **NANO 1 (Master room panel)** |
-| `42..60` | `0x2A..0x3C` | `0xAA..0xBC` | Secondary NANO Slave panels (`ID 2..20`) |
-| `80` | `0x50` | `0xD0` | Floor/heating zone controller |
-| `98` | `0x62` | `0xE2` | Auxiliary module |
-| `99` | `0x63` | `0xE3` | **AERO 4A2 ventilation module** |
-| `100` | `0x64` | `0xE4` | Primary Broadcast channel (Statuses) |
-| `101` | `0x65` | `0xE5` | Secondary Broadcast channel (Config & extract telemetry) |
-| `111` | `0x6F` | `0xEF` | LAN module |
-| `112` | `0x70` | `0xF0` | **iNext / GSM Internet gateway** |
-| `113` | `0x71` | `0xF1` | PC service interface |
+| Address (Dec) | Address (Hex) | Frame Header `f[0]` (`+128`) | Role                                                     |
+| ------------: | ------------: | ---------------------------: | -------------------------------------------------------- |
+|          `41` |        `0x29` |                       `0xA9` | **NANO 1 (Master room panel)**                           |
+|      `42..60` |  `0x2A..0x3C` |                 `0xAA..0xBC` | Secondary NANO Slave panels (`ID 2..20`)                 |
+|          `80` |        `0x50` |                       `0xD0` | Floor/heating zone controller                            |
+|          `98` |        `0x62` |                       `0xE2` | Auxiliary module                                         |
+|          `99` |        `0x63` |                       `0xE3` | **AERO 4A2 ventilation module**                          |
+|         `100` |        `0x64` |                       `0xE4` | Primary Broadcast channel (Statuses)                     |
+|         `101` |        `0x65` |                       `0xE5` | Secondary Broadcast channel (Config & extract telemetry) |
+|         `111` |        `0x6F` |                       `0xEF` | LAN module                                               |
+|         `112` |        `0x70` |                       `0xF0` | **iNext / GSM Internet gateway**                         |
+|         `113` |        `0x71` |                       `0xF1` | PC service interface                                     |
 
 ---
 
@@ -86,7 +86,10 @@ During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.
 
 2. **`E3 44` (`From: 41 -> To: 99`, command `'D'`) — Master Poll & Settings Push to AERO 4A2:**
    - Alternating 3-page configuration (`f[4] = 0x39`, `0x3A`, `0x3B`) containing fan speed percentages for Gears 1/2/3/Airing, heater PID parameters, and sensor thresholds.
-   - `f[28]`: Bit `6` (`0x40`) indicates **Fireplace Mode active** (`0x41` when ON, `0x01` when OFF).
+   - On page `f[4] = 0x3A`:
+     - `f[10]`: Pre-heater lock temperature (`temp_c = (f[10] - 20) * 0.5 °C`, `0x00` = `-10.0 °C` = `OFF`; Register `160`).
+     - `f[12]`: Minimum temperature before heat exchanger (`temp_c = (f[12] - 20) * 0.5 °C`, `0x00` = `-10.0 °C` = `OFF`; Register `161`).
+   - `f[28]`: Bit `6` (`0x40`) indicates **Fireplace Mode active** (`0x41` when ON, `0x01` when OFF; controlled via Register `76`).
 
 3. **`E4 21` (`From: 99 -> To: 100`, command `'!'`) — AERO 4A2 Primary Telemetry (sent ~300ms after `E3 44`):**
    - `f[10..11]`: Intake (outdoor) temperature.
