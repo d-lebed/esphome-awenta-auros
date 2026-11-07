@@ -37,6 +37,7 @@ CONF_CONFIG_ECO_WINTER_TEMPERATURE = "config_eco_winter_temperature"
 CONF_CONFIG_ECO_COOLING_TEMPERATURE = "config_eco_cooling_temperature"
 CONF_CONFIG_MANUAL_TEMPERATURE = "config_manual_temperature"
 CONF_CONFIG_AWAY_TEMPERATURE = "config_away_temperature"
+CONF_CONFIG_PREHEATER_MIN_TEMPERATURE = "config_preheater_min_temperature"
 
 
 def _temp_schema() -> cv.Schema:
@@ -86,6 +87,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CONFIG_ECO_COOLING_TEMPERATURE): _temp_schema(),
         cv.Optional(CONF_CONFIG_MANUAL_TEMPERATURE): _temp_schema(),
         cv.Optional(CONF_CONFIG_AWAY_TEMPERATURE): _temp_schema(),
+        cv.Optional(CONF_CONFIG_PREHEATER_MIN_TEMPERATURE): _temp_schema(),
     }
 )
 
@@ -113,6 +115,7 @@ async def to_code(config: ConfigType) -> None:
         CONF_CONFIG_ECO_COOLING_TEMPERATURE,
         CONF_CONFIG_MANUAL_TEMPERATURE,
         CONF_CONFIG_AWAY_TEMPERATURE,
+        CONF_CONFIG_PREHEATER_MIN_TEMPERATURE,
     ):
         if conf := config.get(key):
             sens = await sensor.new_sensor(conf)

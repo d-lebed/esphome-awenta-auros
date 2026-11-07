@@ -94,7 +94,7 @@ Stored in NANO COLOR 2 memory and cyclically pushed to the AERO 4A2 module via `
 | **157** | 1158 (`1157`) | — | 0 | 2 | 2 | — | Supply temp regulation mode (`0`=Troom, `1`=Tsupply, `2`=Texhaust) |
 | **158** | 1159 (`1158`) | — | 0 | 100 | 20 | — | Supply setpoint correction gain (Winter) |
 | **159** | 1160 (`1159`) | — | 0 | 100 | 20 | — | Supply setpoint correction gain (Summer/Cooling) |
-| **160** | 1161 (`1160`) | — | -20 | 20 | -20 | `°C` | Minimum pre-recuperator temperature |
+| **49** *(160 in older docs)* | 1161 (`1160`) | — | 0 | 40 | 0 | `0.5 °C` (`-10..+10 °C`) | **Minimum pre-recuperator temperature** (`temp = -10.0 + raw * 0.5 °C`, `0` = `-10.0 °C` = `OFF`; broadcast in `E3 44` page `0x3A` byte `f[12]`) |
 | **161** | 1162 (`1161`) | — | 10 | 100 | 20 | — | Pre-recuperator regulation band |
 | **162** | 1163 (`1162`) | — | 0 | 100 | 50 | — | Secondary heater proportional band |
 | **163** | 1164 (`1163`) | — | 0 | 100 | 4 | — | Secondary heater `Ki` gain |

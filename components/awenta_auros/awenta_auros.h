@@ -105,6 +105,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_SENSOR(config_eco_cooling_temperature)
   SUB_SENSOR(config_manual_temperature)
   SUB_SENSOR(config_away_temperature)
+  SUB_SENSOR(config_preheater_min_temperature)
 #endif
 
 #ifdef USE_BINARY_SENSOR
@@ -145,6 +146,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_NUMBER(eco_cooling_temperature)
   SUB_NUMBER(manual_temperature)
   SUB_NUMBER(away_temperature)
+  SUB_NUMBER(preheater_min_temperature)
 #endif
 
  public:
@@ -163,6 +165,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   static constexpr uint16_t REG_ECO_COOLING_TEMP = 5;
   static constexpr uint16_t REG_MANUAL_TEMP = 6;
   static constexpr uint16_t REG_AWAY_TEMP = 7;
+  static constexpr uint16_t REG_PREHEATER_MIN_TEMP = 49;
   static constexpr uint16_t REG_SEASON_MODE = 64;
   static constexpr uint16_t REG_FIREPLACE = 76;
   static constexpr uint16_t REG_GHE = 78;
@@ -225,6 +228,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void set_desired_ghe(bool enabled);
   void set_desired_season_mode(int32_t season_mode);
   void set_desired_temperature(uint16_t reg_id, float temp_c);
+  void set_desired_preheater_min_temperature(float temp_c);
   void set_climate_target_temperature(float temp_c);
 
  protected:
@@ -366,6 +370,14 @@ class AwayTemperatureNumber final : public number::Number, public Parented<Awent
   void control(float value) override {
     this->publish_state(value);
     this->parent_->set_desired_temperature(AwentaAurosComponent::REG_AWAY_TEMP, value);
+  }
+};
+
+class PreheaterMinTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
+ protected:
+  void control(float value) override {
+    this->publish_state(value);
+    this->parent_->set_desired_preheater_min_temperature(value);
   }
 };
 #endif

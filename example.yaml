@@ -80,6 +80,8 @@ number:
       name: "Manual Temperature Setpoint"
     away_temperature:
       name: "Away Temperature Setpoint"
+    preheater_min_temperature:
+      name: "Preheater Min Temperature Setpoint"
 
 binary_sensor:
   - platform: awenta_auros
@@ -136,6 +138,8 @@ sensor:
       name: "Config Manual Temperature"
     config_away_temperature:
       name: "Config Away Temperature"
+    config_preheater_min_temperature:
+      name: "Config Preheater Min Temperature"
 
 text_sensor:
   - platform: awenta_auros

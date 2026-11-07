@@ -186,7 +186,7 @@ switch:
 
 ### 6. Temperature Setpoint Numbers (`number`)
 
-All 5 temperature setpoints support `10.0 .. 30.0 °C` with `0.1 °C` resolution:
+Room temperature setpoints support `10.0 .. 30.0 °C` (`0.1 °C` step), and `preheater_min_temperature` supports `-10.0 .. 10.0 °C` (`0.5 °C` step, where `-10.0 °C` = `OFF`):
 
 ```yaml
 number:
@@ -201,6 +201,8 @@ number:
       name: "Manual Temperature Setpoint" # Reg 6
     away_temperature:
       name: "Away Temperature Setpoint" # Reg 7
+    preheater_min_temperature:
+      name: "Preheater Min Temperature Setpoint" # Reg 49 (-10.0 °C = Off)
 ```
 
 ---
@@ -271,6 +273,8 @@ sensor:
       name: "Config Manual Temperature"
     config_away_temperature:
       name: "Config Away Temperature"
+    config_preheater_min_temperature:
+      name: "Config Preheater Min Temperature"
 ```
 
 ---

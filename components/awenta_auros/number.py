@@ -17,12 +17,16 @@ EcoWinterTemperatureNumber = awenta_auros_ns.class_("EcoWinterTemperatureNumber"
 EcoCoolingTemperatureNumber = awenta_auros_ns.class_("EcoCoolingTemperatureNumber", number.Number)
 ManualTemperatureNumber = awenta_auros_ns.class_("ManualTemperatureNumber", number.Number)
 AwayTemperatureNumber = awenta_auros_ns.class_("AwayTemperatureNumber", number.Number)
+PreheaterMinTemperatureNumber = awenta_auros_ns.class_(
+    "PreheaterMinTemperatureNumber", number.Number
+)
 
 CONF_COMFORT_TEMPERATURE = "comfort_temperature"
 CONF_ECO_WINTER_TEMPERATURE = "eco_winter_temperature"
 CONF_ECO_COOLING_TEMPERATURE = "eco_cooling_temperature"
 CONF_MANUAL_TEMPERATURE = "manual_temperature"
 CONF_AWAY_TEMPERATURE = "away_temperature"
+CONF_PREHEATER_MIN_TEMPERATURE = "preheater_min_temperature"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -58,6 +62,12 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_CELSIUS,
             icon="mdi:home-export-outline",
         ),
+        cv.Optional(CONF_PREHEATER_MIN_TEMPERATURE): number.number_schema(
+            PreheaterMinTemperatureNumber,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            unit_of_measurement=UNIT_CELSIUS,
+            icon="mdi:heating-coil",
+        ),
     }
 )
 
@@ -75,3 +85,8 @@ async def to_code(config: ConfigType) -> None:
             num = await number.new_number(conf, min_value=10.0, max_value=30.0, step=0.1)
             await cg.register_parented(num, hub)
             cg.add(getattr(hub, setter)(num))
+
+    if conf := config.get(CONF_PREHEATER_MIN_TEMPERATURE):
+        num = await number.new_number(conf, min_value=-10.0, max_value=10.0, step=0.5)
+        await cg.register_parented(num, hub)
+        cg.add(hub.set_preheater_min_temperature_number(num))
