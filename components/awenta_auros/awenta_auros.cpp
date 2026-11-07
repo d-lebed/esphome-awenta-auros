@@ -1354,28 +1354,7 @@ namespace esphome::awenta_auros
     }
 
     if (slot == 0)
-    {
-      static const uint16_t SCAN_166[6][6] = {
-          {166, 167, 168, 169, 170, 171},
-          {172, 173, 174, 175, 176, 177},
-          {178, 179, 180, 181, 182, 183},
-          {184, 185, 186, 187, 188, 189},
-          {190, 191, 192, 193, 194, 195},
-          {196, 197, 198, 199, 200, 210}};
-      static uint8_t s_step = 0;
-      if (s_step < 6)
-      {
-        std::array<uint16_t, 6> rregs;
-        for (int i = 0; i < 6; i++)
-          rregs[i] = SCAN_166[s_step][i];
-        std::array<uint16_t, 6> rzeros = {0, 0, 0, 0, 0, 0};
-        char sbuf[32];
-        snprintf(sbuf, sizeof(sbuf), "SCAN166_%u", s_step);
-        s_step++;
-        this->send_c14_rwt_(ADDR_MASTER, 'R', rregs, rzeros, ADDR_INEXT, sbuf);
-      }
       return;
-    }
 
     this->send_c14_rwt_(ADDR_MASTER, 'W', regs, d_raw_values, ADDR_INEXT, label);
   }
@@ -1481,17 +1460,13 @@ namespace esphome::awenta_auros
       }
     }
 
-    if (command == 'D' && source_address == ADDR_MASTER && target_address == ADDR_INEXT)
+    if (command == 'D' && source_address == ADDR_MASTER && target_address == ADDR_INEXT &&
+        this->has_pending_writes())
     {
-      static uint8_t boot_scan = 0;
-      if (this->has_pending_writes() || boot_scan < 6)
-      {
-        boot_scan++;
-        this->tx_scheduled_ = true;
-        this->scheduled_tx_time_ms_ = millis() + 40;
-        ESP_LOGW(TAG_RWT,
-                 "Detected iNext slot (F0 44 from Master 41 -> 112), scheduling RWT in 40ms");
-      }
+      this->tx_scheduled_ = true;
+      this->scheduled_tx_time_ms_ = millis() + 40;
+      ESP_LOGW(TAG_RWT,
+               "Detected iNext slot (F0 44 from Master 41 -> 112), scheduling pending register write in 40ms");
     }
 
     if (command == '!')

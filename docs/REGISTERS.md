@@ -112,6 +112,31 @@ Stored in NANO COLOR 2 memory and cyclically pushed to the AERO 4A2 module via `
 | **174** *(173 in 2023 manual)* | 1175 (`1174`) | — | -20 | 40 | 22 | `°C` | GHE Summer threshold |
 | **175** *(174 in 2023 manual)* | 1176 (`1175`) | — | -20 | 60 | 10 | `°C` | Outdoor temperature threshold for Bypass Auto mode |
 | **176** *(175 in 2023 manual)* | 1177 (`1176`) | — | 0 | 3 | 2 | — | Bypass configuration (`0`=disabled, `1`=simplified, `2`=standard Troom, `3`=standard Texhaust) |
+| **177** *(176 in 2023 manual)* | 1178 (`1177`) | — | 0 | 20 | 0 | `min` | Recuperator dehumidification time |
+| **178** *(177 in 2023 manual)* | 1179 (`1178`) | — | 0 | 2 | 0 | — | Operating scheme (`0`=Standard, `1`=AHU KIT, `2`=AHU PC) |
+| **179** *(178 in 2023 manual)* | 1180 (`1179`) | — | 0 | 100 | 30 | `%` | Recirculation AO3: Speed 1 |
+| **180** *(179 in 2023 manual)* | 1181 (`1180`) | — | 0 | 100 | 60 | `%` | Recirculation AO3: Speed 2 |
+| **181** *(180 in 2023 manual)* | 1182 (`1181`) | — | 0 | 100 | 90 | `%` | Recirculation AO3: Speed 3 |
+| **182** *(181 in 2023 manual)* | 1183 (`1182`) | — | 0 | 100 | 100 | `%` | Recirculation AO3: Airing |
+| **183** *(182 in 2023 manual)* | 1184 (`1183`) | — | 0 | 125 | 0 | — | AO3 regulation |
+| **184** *(183 in 2023 manual)* | 1185 (`1184`) | — | 0 | 1 | 1 | — | Heater priority |
+| **185** *(184 in 2023 manual)* | 1186 (`1185`) | — | -40 | 40 | -40 | `°C` | Minimum temperature to enable AHU |
+| **186** *(185 in 2023 manual)* | 1187 (`1186`) | — | 0 | 1 | 0 | — | Reaction to DEF from AHU |
+| **187** *(186 in 2023 manual)* | 1188 (`1187`) | — | 20 | 100 | 100 | — | AHU heating/cooling regulation band |
+| **188** *(187 in 2023 manual)* | 1189 (`1188`) | — | 0 | 100 | 20 | — | AHU heating/cooling `Ki` gain |
+| **189** *(188 in 2023 manual)* | 1190 (`1189`) | — | 0 | 100 | 20 | `%` | Minimum AHU start power (Heating) |
+| **190** *(189 in 2023 manual)* | 1191 (`1190`) | — | 0 | 100 | 20 | `%` | Minimum AHU start power (Cooling) |
+| **191** *(190 in 2023 manual)* | 1192 (`1191`) | — | 0 | 100 | 100 | `%` | Maximum AHU power |
+| **192** *(191 in 2023 manual)* | 1193 (`1192`) | — | 1 | 100 | 18 | `×30 s` | Minimum AHU idle time |
+| **193** *(192 in 2023 manual)* | 1194 (`1193`) | — | 0 | 120 | 12 | `×10 s` | Minimum AHU operating time |
+| **194** *(193 in 2023 manual)* | 1195 (`1194`) | — | 0 | 3 | 0 | — | Gear offset in Cooling mode |
+| **195** *(194 in 2023 manual)* | 1196 (`1195`) | — | 0 | 120 | 20 | — | AHU start delta |
+| **196** *(195 in 2023 manual)* | 1197 (`1196`) | — | 0 | 1 | 0 | — | AHU heating stop config |
+| **197** *(196 in 2023 manual)* | 1198 (`1197`) | — | 0 | 1 | 0 | — | Turn off supply fan during AHU operation |
+| **198** *(197 in 2023 manual)* | 1199 (`1198`) | — | 0 | 1 | 1 | — | Heater type |
+| **199** *(198 in 2023 manual)* | 1200 (`1199`) | — | 0 | 40 | 15 | `°C` | Minimum T6 water heater temperature |
+| **200** *(199 in 2023 manual)* | 1201 (`1200`) | — | 0 | 1 | 0 | — | Cooling via heat pump (PC) |
+| **201** *(200 in 2023 manual)* | 1202 (`1201`) | — | 0 | 1 | 1 | — | Buffer control via T7 sensor |
 
 ---
 
