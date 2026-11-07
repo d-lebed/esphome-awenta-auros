@@ -165,7 +165,6 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   static constexpr uint16_t REG_ECO_COOLING_TEMP = 5;
   static constexpr uint16_t REG_MANUAL_TEMP = 6;
   static constexpr uint16_t REG_AWAY_TEMP = 7;
-  static constexpr uint16_t REG_PREHEATER_MIN_TEMP = 49;
   static constexpr uint16_t REG_SEASON_MODE = 64;
   static constexpr uint16_t REG_FIREPLACE = 76;
   static constexpr uint16_t REG_GHE = 78;
@@ -173,6 +172,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   static constexpr uint16_t REG_FAN_MODE = 80;
   static constexpr uint16_t REG_AIRING = 81;
   static constexpr uint16_t REG_THERMOSTAT_MODE = 88;
+  static constexpr uint16_t REG_PREHEATER_MIN_TEMP = 161;
 
   struct ManagedRegister {
     int32_t current_raw{0};

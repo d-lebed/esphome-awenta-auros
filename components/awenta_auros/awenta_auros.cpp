@@ -655,7 +655,7 @@ namespace esphome::awenta_auros
       }
       else if (reg_id == REG_PREHEATER_MIN_TEMP && this->preheater_min_temperature_number_ != nullptr)
       {
-        this->preheater_min_temperature_number_->publish_state(-10.0f + (current_raw * 0.5f));
+        this->preheater_min_temperature_number_->publish_state(current_raw * 0.5f);
       }
 #endif
     }
@@ -813,11 +813,11 @@ namespace esphome::awenta_auros
 
   void AwentaAurosComponent::set_desired_preheater_min_temperature(float temp_c)
   {
-    int32_t raw = (int32_t)std::round((temp_c + 10.0f) * 2.0f);
-    if (raw < 0)
-      raw = 0;
-    if (raw > 40)
-      raw = 40;
+    int32_t raw = (int32_t)std::round(temp_c * 2.0f);
+    if (raw < -20)
+      raw = -20;
+    if (raw > 20)
+      raw = 20;
     this->set_desired_register(REG_PREHEATER_MIN_TEMP, raw);
   }
 
@@ -1448,8 +1448,8 @@ namespace esphome::awenta_auros
 #endif
       if (this->rx_buffer_[4] == 0x3A)
       {
-        int32_t preheater_min_raw = (int32_t)this->rx_buffer_[12];
-        float preheater_min_temp = -10.0f + (preheater_min_raw * 0.5f);
+        int32_t preheater_min_raw = (int32_t)this->rx_buffer_[12] - 20;
+        float preheater_min_temp = preheater_min_raw * 0.5f;
         this->update_register_current(REG_PREHEATER_MIN_TEMP, preheater_min_raw);
 #ifdef USE_SENSOR
         if (this->config_preheater_min_temperature_sensor_ != nullptr)

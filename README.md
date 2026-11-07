@@ -202,7 +202,7 @@ number:
     away_temperature:
       name: "Away Temperature Setpoint" # Reg 7
     preheater_min_temperature:
-      name: "Preheater Min Temperature Setpoint" # Reg 49 (-10.0 °C = Off)
+      name: "Preheater Min Temperature Setpoint" # Reg 161 (-10.0 °C = Off)
 ```
 
 ---
