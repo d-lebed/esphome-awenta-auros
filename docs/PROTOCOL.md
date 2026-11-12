@@ -71,7 +71,7 @@ uint16_t raw = ((H & 0x7F) * 128) + (L & 0x7F);
 During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.7-second polling cycle:
 
 1. **`E4 21` (`From: 41 -> To: 100`, command `'!'`) — Master Panel Status:**
-   - `f[5]`: Mode flags (`0x40` = Manual, `0x50` = Schedule; bit `0x04` = Away active).
+   - `f[5]`: Mode flags (bit `0x40` = AERO link OK, bit `0x10` = schedule time-zones active in `Schedule`/`Party`, bit `0x04` = Away active).
    - `f[7]`: Day of week (`0` = Monday .. `6` = Sunday).
    - `f[8]`, `f[9]`: Current hour and minute.
    - `f[12..13]`: Current room temperature (`decode_value`).
@@ -80,6 +80,7 @@ During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.
    - `f[24]`: Cooling demand flag (`(f[24] & 0x32) == 0x00`).
    - `f[25..26]`: 3-phase rotating date (`0x01` = Year - 2000, `0x02` = Month, `0x03` = Day).
    - `f[27]`: Bitfield:
+     - Bits `0..1` (`0x03`): Thermostat mode (`0x00` = Schedule, `0x01` = Party, `0x02` = Manual).
      - Bits `3..4` (`0x18`): Season (`0x00` = Winter, `0x08` = Summer, `0x10` = Cooling).
      - Bit `5` (`0x20`): Airing active.
    - `f[28]`: Active fan gear bits `0..2` (`1` = Stop, `3` = Gear 1, `5` = Gear 2, `7` = Gear 3).

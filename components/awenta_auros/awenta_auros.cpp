@@ -904,32 +904,16 @@ namespace esphome::awenta_auros
     float room_temp = decode_value_(rx_buffer[12], rx_buffer[13]);
     float target_temp = decode_value_(rx_buffer[14], rx_buffer[15]);
 
-#ifdef USE_TEXT_SENSOR
-    if (this->thermostat_mode_text_sensor_ != nullptr)
-    {
-      uint8_t base_mode = mode & 0x50;
-      std::string mode_str;
-      switch (base_mode)
-      {
-      case 0x40:
-        mode_str = "Manual";
-        break;
-      case 0x50:
-        mode_str = "Schedule";
-        break;
-      default:
-        mode_str = "Unexpected (" + std::to_string(base_mode) + ")";
-        break;
-      }
-      this->thermostat_mode_text_sensor_->publish_state(mode_str);
-    }
-#endif
-
+    bool schedule_active = (mode & 0x10) != 0;
     this->is_away_active_ = (mode & 0x04) != 0;
 #ifdef USE_BINARY_SENSOR
-    if (this->away_binary_sensor_ != nullptr)
+    if (this->schedule_mode_binary_sensor_ != nullptr)
     {
-      this->away_binary_sensor_->publish_state(this->is_away_active_);
+      this->schedule_mode_binary_sensor_->publish_state(schedule_active);
+    }
+    if (this->config_away_binary_sensor_ != nullptr)
+    {
+      this->config_away_binary_sensor_->publish_state(this->is_away_active_);
     }
 #endif
 
@@ -984,21 +968,34 @@ namespace esphome::awenta_auros
     }
 #endif
 
+    uint8_t therm_bits = rx_buffer[27] & 0x03;
+#ifdef USE_TEXT_SENSOR
+    if (this->thermostat_mode_text_sensor_ != nullptr)
+    {
+      std::string mode_str = thermostat_mode_to_string(therm_bits);
+      if (mode_str.empty())
+      {
+        mode_str = "Unexpected (" + std::to_string(therm_bits) + ")";
+      }
+      this->thermostat_mode_text_sensor_->publish_state(mode_str);
+    }
+#endif
+
     uint8_t season_bits = rx_buffer[27] & 0x18;
     int32_t season_idx = (season_bits == 0x00) ? 0 : ((season_bits == 0x08) ? 1 : 2);
     this->update_register_current(REG_SEASON_MODE, season_idx);
 
 #ifdef USE_TEXT_SENSOR
-    if (this->season_mode_text_sensor_ != nullptr)
+    if (this->config_season_mode_text_sensor_ != nullptr)
     {
       if (season_bits == 0x00)
-        this->season_mode_text_sensor_->publish_state("Winter");
+        this->config_season_mode_text_sensor_->publish_state("Winter");
       else if (season_bits == 0x08)
-        this->season_mode_text_sensor_->publish_state("Summer");
+        this->config_season_mode_text_sensor_->publish_state("Summer");
       else if (season_bits == 0x10)
-        this->season_mode_text_sensor_->publish_state("Cooling");
+        this->config_season_mode_text_sensor_->publish_state("Cooling");
       else
-        this->season_mode_text_sensor_->publish_state("Unknown");
+        this->config_season_mode_text_sensor_->publish_state("Unknown");
     }
 #endif
 
@@ -1006,9 +1003,9 @@ namespace esphome::awenta_auros
     this->update_register_current(REG_AIRING, airing_active ? 1 : 0);
 
 #ifdef USE_BINARY_SENSOR
-    if (this->ventilation_mode_binary_sensor_ != nullptr)
+    if (this->config_airing_binary_sensor_ != nullptr)
     {
-      this->ventilation_mode_binary_sensor_->publish_state(airing_active);
+      this->config_airing_binary_sensor_->publish_state(airing_active);
     }
 #endif
 
@@ -1021,7 +1018,7 @@ namespace esphome::awenta_auros
     }
 #endif
 #ifdef USE_TEXT_SENSOR
-    if (this->master_fan_speed_text_sensor_ != nullptr)
+    if (this->active_fan_speed_text_sensor_ != nullptr)
     {
       std::string fs_str;
       if (raw_fs == 1)
@@ -1034,7 +1031,7 @@ namespace esphome::awenta_auros
         fs_str = "3";
       else
         fs_str = "Unexpected (" + std::to_string(raw_fs) + ")";
-      this->master_fan_speed_text_sensor_->publish_state(fs_str);
+      this->active_fan_speed_text_sensor_->publish_state(fs_str);
     }
 #endif
 
@@ -1483,9 +1480,9 @@ namespace esphome::awenta_auros
       bool fireplace_active = (this->rx_buffer_[28] & 0x40) != 0;
       this->update_register_current(REG_FIREPLACE, fireplace_active ? 1 : 0);
 #ifdef USE_BINARY_SENSOR
-      if (this->fireplace_mode_binary_sensor_ != nullptr)
+      if (this->config_fireplace_mode_binary_sensor_ != nullptr)
       {
-        this->fireplace_mode_binary_sensor_->publish_state(fireplace_active);
+        this->config_fireplace_mode_binary_sensor_->publish_state(fireplace_active);
       }
 #endif
       if (this->rx_buffer_[4] == 0x39)

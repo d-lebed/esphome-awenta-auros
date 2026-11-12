@@ -58,6 +58,16 @@ def _temp_schema() -> cv.Schema:
     )
 
 
+def _diagnostic_temp_schema() -> cv.Schema:
+    return sensor.sensor_schema(
+        unit_of_measurement=UNIT_CELSIUS,
+        accuracy_decimals=1,
+        device_class=DEVICE_CLASS_TEMPERATURE,
+        state_class=STATE_CLASS_MEASUREMENT,
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+    )
+
+
 def _speed_schema() -> cv.Schema:
     return sensor.sensor_schema(
         unit_of_measurement=UNIT_PERCENT,
@@ -101,13 +111,13 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_SUPPLY_FAN_SPEED): _speed_schema(),
         cv.Optional(CONF_EXTRACT_FAN_SPEED): _speed_schema(),
         cv.Optional(CONF_EXHAUST_FAN_SPEED): _speed_schema(),
-        cv.Optional(CONF_CONFIG_INTAKE_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_CONFIG_COMFORT_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_CONFIG_ECO_WINTER_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_CONFIG_ECO_COOLING_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_CONFIG_MANUAL_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_CONFIG_AWAY_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_CONFIG_PREHEATER_MIN_TEMPERATURE): _temp_schema(),
+        cv.Optional(CONF_CONFIG_INTAKE_TEMPERATURE): _diagnostic_temp_schema(),
+        cv.Optional(CONF_CONFIG_COMFORT_TEMPERATURE): _diagnostic_temp_schema(),
+        cv.Optional(CONF_CONFIG_ECO_WINTER_TEMPERATURE): _diagnostic_temp_schema(),
+        cv.Optional(CONF_CONFIG_ECO_COOLING_TEMPERATURE): _diagnostic_temp_schema(),
+        cv.Optional(CONF_CONFIG_MANUAL_TEMPERATURE): _diagnostic_temp_schema(),
+        cv.Optional(CONF_CONFIG_AWAY_TEMPERATURE): _diagnostic_temp_schema(),
+        cv.Optional(CONF_CONFIG_PREHEATER_MIN_TEMPERATURE): _diagnostic_temp_schema(),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_1): _diagnostic_speed_schema("mdi:fan-speed-1"),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_2): _diagnostic_speed_schema("mdi:fan-speed-2"),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_3): _diagnostic_speed_schema("mdi:fan-speed-3"),

@@ -186,7 +186,7 @@ switch:
 
 ### 6. Setpoint & Fan Speed Numbers (`number`)
 
-Room temperature setpoints support `10.0 .. 30.0 °C` (`0.1 °C` step), `preheater_min_temperature` supports `-10.0 .. 10.0 °C` (`0.5 °C` step, where `-10.0 °C` = `OFF`), and fan speed gear setpoints support `0 .. 100 %` (`1 %` step, `entity_category: config`):
+Room temperature setpoints support `10.0 .. 30.0 °C` (`0.1 °C` step), `preheater_min_temperature` supports `-10.0 .. 10.0 °C` (`0.5 °C` step, where `-10.0 °C` = `OFF`, `entity_category: config`), and fan speed gear setpoints support `0 .. 100 %` (`1 %` step, `entity_category: config`):
 
 ```yaml
 number:
@@ -230,14 +230,16 @@ binary_sensor:
   - platform: awenta_auros
     cooling_demand:
       name: "Cooling Demand"
-    ventilation_mode:
-      name: "Ventilation Mode" # Active when Airing is running
     bypass_position:
       name: "Bypass Position" # Active when bypass damper is open
-    away:
-      name: "Away" # Active when Away mode is enabled on the panel
-    fireplace_mode:
-      name: "Fireplace Mode" # Active when Fireplace mode is active in E3 44
+    schedule_mode:
+      name: "Schedule Mode" # Active when panel runs on time-zone schedule (Schedule or Party)
+    config_airing:
+      name: "Config Airing" # Active when Airing is enabled on the panel
+    config_away:
+      name: "Config Away" # Active when Away mode is enabled on the panel
+    config_fireplace_mode:
+      name: "Config Fireplace Mode" # Active when Fireplace mode is active in E3 44
 ```
 
 ---
@@ -316,10 +318,12 @@ sensor:
 ```yaml
 text_sensor:
   - platform: awenta_auros
-    master_fan_speed:
-      name: "Master Fan Speed"
-    season_mode:
-      name: "Season Mode"
+    active_fan_speed:
+      name: "Active Fan Speed"
+    thermostat_mode:
+      name: "Thermostat Mode"
+    config_season_mode:
+      name: "Config Season Mode"
     config_fan_speed:
       name: "Config Fan Speed"
     config_thermostat_mode:
@@ -328,8 +332,6 @@ text_sensor:
       name: "Config Bypass Mode"
     config_ghe_mode:
       name: "Config GHE Mode"
-    thermostat_mode:
-      name: "Thermostat Mode"
     time:
       name: "Time"
     day_of_week:

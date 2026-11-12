@@ -8,9 +8,9 @@ from . import CONF_AWENTA_AUROS_ID, AwentaAurosComponent
 
 DEPENDENCIES = ["awenta_auros"]
 
-CONF_MASTER_FAN_SPEED = "master_fan_speed"
-CONF_SEASON_MODE = "season_mode"
+CONF_ACTIVE_FAN_SPEED = "active_fan_speed"
 CONF_THERMOSTAT_MODE = "thermostat_mode"
+CONF_CONFIG_SEASON_MODE = "config_season_mode"
 CONF_CONFIG_FAN_SPEED = "config_fan_speed"
 CONF_CONFIG_THERMOSTAT_MODE = "config_thermostat_mode"
 CONF_CONFIG_BYPASS_MODE = "config_bypass_mode"
@@ -22,13 +22,25 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_ID): cv.declare_id(cg.EntityBase),
         cv.GenerateID(CONF_AWENTA_AUROS_ID): cv.use_id(AwentaAurosComponent),
-        cv.Optional(CONF_MASTER_FAN_SPEED): text_sensor.text_sensor_schema(),
-        cv.Optional(CONF_SEASON_MODE): text_sensor.text_sensor_schema(),
-        cv.Optional(CONF_THERMOSTAT_MODE): text_sensor.text_sensor_schema(),
-        cv.Optional(CONF_CONFIG_FAN_SPEED): text_sensor.text_sensor_schema(),
-        cv.Optional(CONF_CONFIG_THERMOSTAT_MODE): text_sensor.text_sensor_schema(),
-        cv.Optional(CONF_CONFIG_BYPASS_MODE): text_sensor.text_sensor_schema(),
-        cv.Optional(CONF_CONFIG_GHE_MODE): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_ACTIVE_FAN_SPEED): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_THERMOSTAT_MODE): text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+        ),
+        cv.Optional(CONF_CONFIG_SEASON_MODE): text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+        ),
+        cv.Optional(CONF_CONFIG_FAN_SPEED): text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+        ),
+        cv.Optional(CONF_CONFIG_THERMOSTAT_MODE): text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+        ),
+        cv.Optional(CONF_CONFIG_BYPASS_MODE): text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+        ),
+        cv.Optional(CONF_CONFIG_GHE_MODE): text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+        ),
         cv.Optional(CONF_TIME): text_sensor.text_sensor_schema(
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC
         ),
@@ -42,9 +54,9 @@ CONFIG_SCHEMA = cv.Schema(
 async def to_code(config: ConfigType) -> None:
     hub = await cg.get_variable(config[CONF_AWENTA_AUROS_ID])
     for key in (
-        CONF_MASTER_FAN_SPEED,
-        CONF_SEASON_MODE,
+        CONF_ACTIVE_FAN_SPEED,
         CONF_THERMOSTAT_MODE,
+        CONF_CONFIG_SEASON_MODE,
         CONF_CONFIG_FAN_SPEED,
         CONF_CONFIG_THERMOSTAT_MODE,
         CONF_CONFIG_BYPASS_MODE,

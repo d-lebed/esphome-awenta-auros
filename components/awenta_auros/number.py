@@ -84,6 +84,7 @@ CONFIG_SCHEMA = cv.Schema(
             PreheaterMinTemperatureNumber,
             device_class=DEVICE_CLASS_TEMPERATURE,
             unit_of_measurement=UNIT_CELSIUS,
+            entity_category=ENTITY_CATEGORY_CONFIG,
             icon="mdi:heating-coil",
         ),
         cv.Optional(CONF_SUPPLY_FAN_SPEED_1): number.number_schema(

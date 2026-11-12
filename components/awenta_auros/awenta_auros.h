@@ -118,16 +118,17 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
 
 #ifdef USE_BINARY_SENSOR
   SUB_BINARY_SENSOR(cooling_demand)
-  SUB_BINARY_SENSOR(ventilation_mode)
   SUB_BINARY_SENSOR(bypass_position)
-  SUB_BINARY_SENSOR(away)
-  SUB_BINARY_SENSOR(fireplace_mode)
+  SUB_BINARY_SENSOR(schedule_mode)
+  SUB_BINARY_SENSOR(config_airing)
+  SUB_BINARY_SENSOR(config_away)
+  SUB_BINARY_SENSOR(config_fireplace_mode)
 #endif
 
 #ifdef USE_TEXT_SENSOR
-  SUB_TEXT_SENSOR(master_fan_speed)
-  SUB_TEXT_SENSOR(season_mode)
+  SUB_TEXT_SENSOR(active_fan_speed)
   SUB_TEXT_SENSOR(thermostat_mode)
+  SUB_TEXT_SENSOR(config_season_mode)
   SUB_TEXT_SENSOR(config_fan_speed)
   SUB_TEXT_SENSOR(config_thermostat_mode)
   SUB_TEXT_SENSOR(config_bypass_mode)

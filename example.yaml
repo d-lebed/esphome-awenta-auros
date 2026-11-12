@@ -103,14 +103,16 @@ binary_sensor:
   - platform: awenta_auros
     cooling_demand:
       name: "Cooling Demand"
-    ventilation_mode:
-      name: "Ventilation Mode"
     bypass_position:
       name: "Bypass Position"
-    away:
-      name: "Away"
-    fireplace_mode:
-      name: "Fireplace Mode"
+    schedule_mode:
+      name: "Schedule Mode"
+    config_airing:
+      name: "Config Airing"
+    config_away:
+      name: "Config Away"
+    config_fireplace_mode:
+      name: "Config Fireplace Mode"
 
 sensor:
   - platform: awenta_auros
@@ -175,10 +177,12 @@ sensor:
 
 text_sensor:
   - platform: awenta_auros
-    master_fan_speed:
-      name: "Master Fan Speed"
-    season_mode:
-      name: "Season Mode"
+    active_fan_speed:
+      name: "Active Fan Speed"
+    thermostat_mode:
+      name: "Thermostat Mode"
+    config_season_mode:
+      name: "Config Season Mode"
     config_fan_speed:
       name: "Config Fan Speed"
     config_thermostat_mode:
@@ -187,8 +191,6 @@ text_sensor:
       name: "Config Bypass Mode"
     config_ghe_mode:
       name: "Config GHE Mode"
-    thermostat_mode:
-      name: "Thermostat Mode"
     time:
       name: "Time"
     day_of_week:
