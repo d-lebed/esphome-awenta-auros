@@ -86,7 +86,14 @@ During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.
 
 2. **`E3 44` (`From: 41 -> To: 99`, command `'D'`) — Master Poll & Settings Push to AERO 4A2:**
    - Alternating 3-page configuration (`f[4] = 0x39`, `0x3A`, `0x3B`) containing fan speed percentages for Gears 1/2/3/Airing, heater PID parameters, and sensor thresholds.
+   - On page `f[4] = 0x39`:
+     - `f[14]`: Exhaust fan Airing speed (`%`, Register `148`).
+     - `f[15]`: Supply fan Airing speed (`%`, Register `144`).
+     - `f[20..22]`: Exhaust fan Speed 1 / Speed 2 / Speed 3 (`%`, Registers `145..147`).
+     - `f[23..25]`: Supply fan Speed 1 / Speed 2 / Speed 3 (`%`, Registers `141..143`).
+     - `f[27]`: Bitfield combining Season (`0x00` = Winter, `0x08` = Summer, `0x10` = Cooling), Bypass command (`0..2`), and Airing overlay (`+0x20`).
    - On page `f[4] = 0x3A`:
+     - `f[6..9]`: Recirculation `AO3` Speed 1 / Speed 2 / Speed 3 / Airing (`%`, Registers `179..182`).
      - `f[10]`: Pre-heater lock temperature (`temp_c = (f[10] - 20) * 0.5 °C`, `0x00` = `-10.0 °C` = `OFF`; Register `160`).
      - `f[12]`: Minimum temperature before heat exchanger (`temp_c = (f[12] - 20) * 0.5 °C`, `0x00` = `-10.0 °C` = `OFF`; Register `161`).
    - `f[28]`: Bit `6` (`0x40`) indicates **Fireplace Mode active** (`0x41` when ON, `0x01` when OFF; controlled via Register `76`).
@@ -117,6 +124,7 @@ During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.
    - `f[25]`:
      - Bits `0..1` (`0x03`): Bypass mode (Register `79`: `0` = Off, `1` = Auto, `2` = On).
      - Bit `2` (`0x04`): GHE / Pre-heater mode (Register `78`: `0` = Off, `4` = Auto).
+   - `f[27]`: Season enum (`0x00` = Winter, `0x0A` = Summer, `0x14` = Cooling).
    - `f[28]`: Combined decimal UI mode `therm * 10 + fan_mode`:
      - `fan_mode = f[28] % 10` (Register `80`: `0` = Off, `1` = Speed 1, `2` = Speed 2, `3` = Speed 3, `4` = Party, `5` = Schedule).
      - `therm = (f[28] / 10) % 10` (Register `88`: `0` = Schedule, `1` = Party, `2` = Manual).

@@ -657,6 +657,38 @@ namespace esphome::awenta_auros
       {
         this->preheater_min_temperature_number_->publish_state(current_raw * 0.5f);
       }
+      else if (reg_id == REG_SUPPLY_FAN_SPEED_1 && this->supply_fan_speed_1_number_ != nullptr)
+      {
+        this->supply_fan_speed_1_number_->publish_state((float)current_raw);
+      }
+      else if (reg_id == REG_SUPPLY_FAN_SPEED_2 && this->supply_fan_speed_2_number_ != nullptr)
+      {
+        this->supply_fan_speed_2_number_->publish_state((float)current_raw);
+      }
+      else if (reg_id == REG_SUPPLY_FAN_SPEED_3 && this->supply_fan_speed_3_number_ != nullptr)
+      {
+        this->supply_fan_speed_3_number_->publish_state((float)current_raw);
+      }
+      else if (reg_id == REG_SUPPLY_FAN_AIRING_SPEED && this->supply_fan_airing_speed_number_ != nullptr)
+      {
+        this->supply_fan_airing_speed_number_->publish_state((float)current_raw);
+      }
+      else if (reg_id == REG_EXHAUST_FAN_SPEED_1 && this->exhaust_fan_speed_1_number_ != nullptr)
+      {
+        this->exhaust_fan_speed_1_number_->publish_state((float)current_raw);
+      }
+      else if (reg_id == REG_EXHAUST_FAN_SPEED_2 && this->exhaust_fan_speed_2_number_ != nullptr)
+      {
+        this->exhaust_fan_speed_2_number_->publish_state((float)current_raw);
+      }
+      else if (reg_id == REG_EXHAUST_FAN_SPEED_3 && this->exhaust_fan_speed_3_number_ != nullptr)
+      {
+        this->exhaust_fan_speed_3_number_->publish_state((float)current_raw);
+      }
+      else if (reg_id == REG_EXHAUST_FAN_AIRING_SPEED && this->exhaust_fan_airing_speed_number_ != nullptr)
+      {
+        this->exhaust_fan_airing_speed_number_->publish_state((float)current_raw);
+      }
 #endif
     }
   }
@@ -819,6 +851,16 @@ namespace esphome::awenta_auros
     if (raw > 20)
       raw = 20;
     this->set_desired_register(REG_PREHEATER_MIN_TEMP, raw);
+  }
+
+  void AwentaAurosComponent::set_desired_fan_speed_percent(uint16_t reg_id, float percent)
+  {
+    int32_t raw = (int32_t)std::round(percent);
+    if (raw < 0)
+      raw = 0;
+    if (raw > 100)
+      raw = 100;
+    this->set_desired_register(reg_id, raw);
   }
 
   void AwentaAurosComponent::set_climate_target_temperature(float temp_c)
@@ -1166,9 +1208,9 @@ namespace esphome::awenta_auros
 #endif
 
     ESP_LOGD(TAG,
-             "Unparsed master config bytes: [5]=%02X [18..24]=%02X %02X %02X %02X %02X %02X %02X [26]=%02X [27]=%02X",
+             "Unparsed master config bytes: [5]=%02X [18..24]=%02X %02X %02X %02X %02X %02X %02X [26]=%02X",
              rx_buffer[5], rx_buffer[18], rx_buffer[19], rx_buffer[20], rx_buffer[21],
-             rx_buffer[22], rx_buffer[23], rx_buffer[24], rx_buffer[26], rx_buffer[27]);
+             rx_buffer[22], rx_buffer[23], rx_buffer[24], rx_buffer[26]);
   }
 
   void AwentaAurosComponent::handle_aero_status_(const std::vector<uint8_t> &rx_buffer)
@@ -1208,9 +1250,9 @@ namespace esphome::awenta_auros
 #endif
 
     ESP_LOGD(TAG,
-             "Unparsed aero status bytes: [6..9]=%02X %02X %02X %02X [16..17]=%02X %02X [20..21]=%02X %02X [23..24]=%02X %02X [27..28]=%02X %02X",
+             "Unparsed aero status bytes: [6..9]=%02X %02X %02X %02X [16..17]=%02X %02X [20..21]=%02X %02X [23..24]=%02X %02X [27]=%02X",
              rx_buffer[6], rx_buffer[7], rx_buffer[8], rx_buffer[9], rx_buffer[16], rx_buffer[17],
-             rx_buffer[20], rx_buffer[21], rx_buffer[23], rx_buffer[24], rx_buffer[27], rx_buffer[28]);
+             rx_buffer[20], rx_buffer[21], rx_buffer[23], rx_buffer[24], rx_buffer[27]);
   }
 
   void AwentaAurosComponent::handle_aero_secondary_(const std::vector<uint8_t> &rx_buffer)
@@ -1446,7 +1488,68 @@ namespace esphome::awenta_auros
         this->fireplace_mode_binary_sensor_->publish_state(fireplace_active);
       }
 #endif
-      if (this->rx_buffer_[4] == 0x3A)
+      if (this->rx_buffer_[4] == 0x39)
+      {
+        int32_t exhaust_airing_speed = (int32_t)this->rx_buffer_[14];
+        int32_t supply_airing_speed = (int32_t)this->rx_buffer_[15];
+        int32_t exhaust_speed_1 = (int32_t)this->rx_buffer_[20];
+        int32_t exhaust_speed_2 = (int32_t)this->rx_buffer_[21];
+        int32_t exhaust_speed_3 = (int32_t)this->rx_buffer_[22];
+        int32_t supply_speed_1 = (int32_t)this->rx_buffer_[23];
+        int32_t supply_speed_2 = (int32_t)this->rx_buffer_[24];
+        int32_t supply_speed_3 = (int32_t)this->rx_buffer_[25];
+
+        this->update_register_current(REG_EXHAUST_FAN_AIRING_SPEED, exhaust_airing_speed);
+        this->update_register_current(REG_SUPPLY_FAN_AIRING_SPEED, supply_airing_speed);
+        this->update_register_current(REG_EXHAUST_FAN_SPEED_1, exhaust_speed_1);
+        this->update_register_current(REG_EXHAUST_FAN_SPEED_2, exhaust_speed_2);
+        this->update_register_current(REG_EXHAUST_FAN_SPEED_3, exhaust_speed_3);
+        this->update_register_current(REG_SUPPLY_FAN_SPEED_1, supply_speed_1);
+        this->update_register_current(REG_SUPPLY_FAN_SPEED_2, supply_speed_2);
+        this->update_register_current(REG_SUPPLY_FAN_SPEED_3, supply_speed_3);
+
+#ifdef USE_SENSOR
+        if (this->config_exhaust_fan_airing_speed_sensor_ != nullptr)
+        {
+          this->config_exhaust_fan_airing_speed_sensor_->publish_state((float)exhaust_airing_speed);
+        }
+        if (this->config_supply_fan_airing_speed_sensor_ != nullptr)
+        {
+          this->config_supply_fan_airing_speed_sensor_->publish_state((float)supply_airing_speed);
+        }
+        if (this->config_exhaust_fan_speed_1_sensor_ != nullptr)
+        {
+          this->config_exhaust_fan_speed_1_sensor_->publish_state((float)exhaust_speed_1);
+        }
+        if (this->config_exhaust_fan_speed_2_sensor_ != nullptr)
+        {
+          this->config_exhaust_fan_speed_2_sensor_->publish_state((float)exhaust_speed_2);
+        }
+        if (this->config_exhaust_fan_speed_3_sensor_ != nullptr)
+        {
+          this->config_exhaust_fan_speed_3_sensor_->publish_state((float)exhaust_speed_3);
+        }
+        if (this->config_supply_fan_speed_1_sensor_ != nullptr)
+        {
+          this->config_supply_fan_speed_1_sensor_->publish_state((float)supply_speed_1);
+        }
+        if (this->config_supply_fan_speed_2_sensor_ != nullptr)
+        {
+          this->config_supply_fan_speed_2_sensor_->publish_state((float)supply_speed_2);
+        }
+        if (this->config_supply_fan_speed_3_sensor_ != nullptr)
+        {
+          this->config_supply_fan_speed_3_sensor_->publish_state((float)supply_speed_3);
+        }
+#endif
+        ESP_LOGD(TAG,
+                 "Unparsed E3 44 (0x39) bytes: [5..13]=%02X %02X %02X %02X %02X %02X %02X %02X %02X [16..19]=%02X %02X %02X %02X [26]=%02X",
+                 this->rx_buffer_[5], this->rx_buffer_[6], this->rx_buffer_[7], this->rx_buffer_[8],
+                 this->rx_buffer_[9], this->rx_buffer_[10], this->rx_buffer_[11], this->rx_buffer_[12],
+                 this->rx_buffer_[13], this->rx_buffer_[16], this->rx_buffer_[17], this->rx_buffer_[18],
+                 this->rx_buffer_[19], this->rx_buffer_[26]);
+      }
+      else if (this->rx_buffer_[4] == 0x3A)
       {
         int32_t preheater_min_raw = (int32_t)this->rx_buffer_[12] - 20;
         float preheater_min_temp = preheater_min_raw * 0.5f;
@@ -1457,6 +1560,24 @@ namespace esphome::awenta_auros
           this->config_preheater_min_temperature_sensor_->publish_state(preheater_min_temp);
         }
 #endif
+        ESP_LOGD(TAG,
+                 "Unparsed E3 44 (0x3A) bytes: [5]=%02X [11]=%02X [13..27]=%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                 this->rx_buffer_[5], this->rx_buffer_[11], this->rx_buffer_[13], this->rx_buffer_[14],
+                 this->rx_buffer_[15], this->rx_buffer_[16], this->rx_buffer_[17], this->rx_buffer_[18],
+                 this->rx_buffer_[19], this->rx_buffer_[20], this->rx_buffer_[21], this->rx_buffer_[22],
+                 this->rx_buffer_[23], this->rx_buffer_[24], this->rx_buffer_[25], this->rx_buffer_[26],
+                 this->rx_buffer_[27]);
+      }
+      else if (this->rx_buffer_[4] == 0x3B)
+      {
+        ESP_LOGD(TAG,
+                 "Unparsed E3 44 (0x3B) bytes: [5..27]=%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X",
+                 this->rx_buffer_[5], this->rx_buffer_[6], this->rx_buffer_[7], this->rx_buffer_[8],
+                 this->rx_buffer_[9], this->rx_buffer_[10], this->rx_buffer_[11], this->rx_buffer_[12],
+                 this->rx_buffer_[13], this->rx_buffer_[14], this->rx_buffer_[15], this->rx_buffer_[16],
+                 this->rx_buffer_[17], this->rx_buffer_[18], this->rx_buffer_[19], this->rx_buffer_[20],
+                 this->rx_buffer_[21], this->rx_buffer_[22], this->rx_buffer_[23], this->rx_buffer_[24],
+                 this->rx_buffer_[25], this->rx_buffer_[26], this->rx_buffer_[27]);
       }
     }
 

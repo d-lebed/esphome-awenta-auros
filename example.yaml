@@ -82,6 +82,22 @@ number:
       name: "Away Temperature Setpoint"
     preheater_min_temperature:
       name: "Preheater Min Temperature Setpoint"
+    supply_fan_speed_1:
+      name: "Supply Fan Speed 1 Setpoint"
+    supply_fan_speed_2:
+      name: "Supply Fan Speed 2 Setpoint"
+    supply_fan_speed_3:
+      name: "Supply Fan Speed 3 Setpoint"
+    supply_fan_airing_speed:
+      name: "Supply Fan Airing Speed Setpoint"
+    exhaust_fan_speed_1:
+      name: "Exhaust Fan Speed 1 Setpoint"
+    exhaust_fan_speed_2:
+      name: "Exhaust Fan Speed 2 Setpoint"
+    exhaust_fan_speed_3:
+      name: "Exhaust Fan Speed 3 Setpoint"
+    exhaust_fan_airing_speed:
+      name: "Exhaust Fan Airing Speed Setpoint"
 
 binary_sensor:
   - platform: awenta_auros
@@ -140,6 +156,22 @@ sensor:
       name: "Config Away Temperature"
     config_preheater_min_temperature:
       name: "Config Preheater Min Temperature"
+    config_supply_fan_speed_1:
+      name: "Config Supply Fan Speed 1"
+    config_supply_fan_speed_2:
+      name: "Config Supply Fan Speed 2"
+    config_supply_fan_speed_3:
+      name: "Config Supply Fan Speed 3"
+    config_supply_fan_airing_speed:
+      name: "Config Supply Fan Airing Speed"
+    config_exhaust_fan_speed_1:
+      name: "Config Exhaust Fan Speed 1"
+    config_exhaust_fan_speed_2:
+      name: "Config Exhaust Fan Speed 2"
+    config_exhaust_fan_speed_3:
+      name: "Config Exhaust Fan Speed 3"
+    config_exhaust_fan_airing_speed:
+      name: "Config Exhaust Fan Airing Speed"
 
 text_sensor:
   - platform: awenta_auros

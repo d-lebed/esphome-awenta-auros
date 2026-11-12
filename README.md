@@ -184,9 +184,9 @@ switch:
 
 ---
 
-### 6. Temperature Setpoint Numbers (`number`)
+### 6. Setpoint & Fan Speed Numbers (`number`)
 
-Room temperature setpoints support `10.0 .. 30.0 °C` (`0.1 °C` step), and `preheater_min_temperature` supports `-10.0 .. 10.0 °C` (`0.5 °C` step, where `-10.0 °C` = `OFF`):
+Room temperature setpoints support `10.0 .. 30.0 °C` (`0.1 °C` step), `preheater_min_temperature` supports `-10.0 .. 10.0 °C` (`0.5 °C` step, where `-10.0 °C` = `OFF`), and fan speed gear setpoints support `0 .. 100 %` (`1 %` step, `entity_category: config`):
 
 ```yaml
 number:
@@ -203,6 +203,22 @@ number:
       name: "Away Temperature Setpoint" # Reg 7
     preheater_min_temperature:
       name: "Preheater Min Temperature Setpoint" # Reg 161 (-10.0 °C = Off)
+    supply_fan_speed_1:
+      name: "Supply Fan Speed 1 Setpoint" # Reg 141 (0..100%)
+    supply_fan_speed_2:
+      name: "Supply Fan Speed 2 Setpoint" # Reg 142 (0..100%)
+    supply_fan_speed_3:
+      name: "Supply Fan Speed 3 Setpoint" # Reg 143 (0..100%)
+    supply_fan_airing_speed:
+      name: "Supply Fan Airing Speed Setpoint" # Reg 144 (0..100%)
+    exhaust_fan_speed_1:
+      name: "Exhaust Fan Speed 1 Setpoint" # Reg 145 (0..100%)
+    exhaust_fan_speed_2:
+      name: "Exhaust Fan Speed 2 Setpoint" # Reg 146 (0..100%)
+    exhaust_fan_speed_3:
+      name: "Exhaust Fan Speed 3 Setpoint" # Reg 147 (0..100%)
+    exhaust_fan_airing_speed:
+      name: "Exhaust Fan Airing Speed Setpoint" # Reg 148 (0..100%)
 ```
 
 ---
@@ -275,6 +291,22 @@ sensor:
       name: "Config Away Temperature"
     config_preheater_min_temperature:
       name: "Config Preheater Min Temperature"
+    config_supply_fan_speed_1:
+      name: "Config Supply Fan Speed 1"
+    config_supply_fan_speed_2:
+      name: "Config Supply Fan Speed 2"
+    config_supply_fan_speed_3:
+      name: "Config Supply Fan Speed 3"
+    config_supply_fan_airing_speed:
+      name: "Config Supply Fan Airing Speed"
+    config_exhaust_fan_speed_1:
+      name: "Config Exhaust Fan Speed 1"
+    config_exhaust_fan_speed_2:
+      name: "Config Exhaust Fan Speed 2"
+    config_exhaust_fan_speed_3:
+      name: "Config Exhaust Fan Speed 3"
+    config_exhaust_fan_airing_speed:
+      name: "Config Exhaust Fan Airing Speed"
 ```
 
 ---

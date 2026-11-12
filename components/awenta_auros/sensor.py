@@ -6,6 +6,7 @@ from esphome.const import (
     DEVICE_CLASS_HUMIDITY,
     DEVICE_CLASS_SPEED,
     DEVICE_CLASS_TEMPERATURE,
+    ENTITY_CATEGORY_DIAGNOSTIC,
     STATE_CLASS_MEASUREMENT,
     UNIT_CELSIUS,
     UNIT_PERCENT,
@@ -38,6 +39,14 @@ CONF_CONFIG_ECO_COOLING_TEMPERATURE = "config_eco_cooling_temperature"
 CONF_CONFIG_MANUAL_TEMPERATURE = "config_manual_temperature"
 CONF_CONFIG_AWAY_TEMPERATURE = "config_away_temperature"
 CONF_CONFIG_PREHEATER_MIN_TEMPERATURE = "config_preheater_min_temperature"
+CONF_CONFIG_SUPPLY_FAN_SPEED_1 = "config_supply_fan_speed_1"
+CONF_CONFIG_SUPPLY_FAN_SPEED_2 = "config_supply_fan_speed_2"
+CONF_CONFIG_SUPPLY_FAN_SPEED_3 = "config_supply_fan_speed_3"
+CONF_CONFIG_SUPPLY_FAN_AIRING_SPEED = "config_supply_fan_airing_speed"
+CONF_CONFIG_EXHAUST_FAN_SPEED_1 = "config_exhaust_fan_speed_1"
+CONF_CONFIG_EXHAUST_FAN_SPEED_2 = "config_exhaust_fan_speed_2"
+CONF_CONFIG_EXHAUST_FAN_SPEED_3 = "config_exhaust_fan_speed_3"
+CONF_CONFIG_EXHAUST_FAN_AIRING_SPEED = "config_exhaust_fan_airing_speed"
 
 
 def _temp_schema() -> cv.Schema:
@@ -55,6 +64,17 @@ def _speed_schema() -> cv.Schema:
         accuracy_decimals=0,
         device_class=DEVICE_CLASS_SPEED,
         state_class=STATE_CLASS_MEASUREMENT,
+    )
+
+
+def _diagnostic_speed_schema(icon: str) -> cv.Schema:
+    return sensor.sensor_schema(
+        unit_of_measurement=UNIT_PERCENT,
+        accuracy_decimals=0,
+        device_class=DEVICE_CLASS_SPEED,
+        state_class=STATE_CLASS_MEASUREMENT,
+        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        icon=icon,
     )
 
 
@@ -88,6 +108,14 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CONFIG_MANUAL_TEMPERATURE): _temp_schema(),
         cv.Optional(CONF_CONFIG_AWAY_TEMPERATURE): _temp_schema(),
         cv.Optional(CONF_CONFIG_PREHEATER_MIN_TEMPERATURE): _temp_schema(),
+        cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_1): _diagnostic_speed_schema("mdi:fan-speed-1"),
+        cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_2): _diagnostic_speed_schema("mdi:fan-speed-2"),
+        cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_3): _diagnostic_speed_schema("mdi:fan-speed-3"),
+        cv.Optional(CONF_CONFIG_SUPPLY_FAN_AIRING_SPEED): _diagnostic_speed_schema("mdi:fan-plus"),
+        cv.Optional(CONF_CONFIG_EXHAUST_FAN_SPEED_1): _diagnostic_speed_schema("mdi:fan-speed-1"),
+        cv.Optional(CONF_CONFIG_EXHAUST_FAN_SPEED_2): _diagnostic_speed_schema("mdi:fan-speed-2"),
+        cv.Optional(CONF_CONFIG_EXHAUST_FAN_SPEED_3): _diagnostic_speed_schema("mdi:fan-speed-3"),
+        cv.Optional(CONF_CONFIG_EXHAUST_FAN_AIRING_SPEED): _diagnostic_speed_schema("mdi:fan-plus"),
     }
 )
 
@@ -116,6 +144,14 @@ async def to_code(config: ConfigType) -> None:
         CONF_CONFIG_MANUAL_TEMPERATURE,
         CONF_CONFIG_AWAY_TEMPERATURE,
         CONF_CONFIG_PREHEATER_MIN_TEMPERATURE,
+        CONF_CONFIG_SUPPLY_FAN_SPEED_1,
+        CONF_CONFIG_SUPPLY_FAN_SPEED_2,
+        CONF_CONFIG_SUPPLY_FAN_SPEED_3,
+        CONF_CONFIG_SUPPLY_FAN_AIRING_SPEED,
+        CONF_CONFIG_EXHAUST_FAN_SPEED_1,
+        CONF_CONFIG_EXHAUST_FAN_SPEED_2,
+        CONF_CONFIG_EXHAUST_FAN_SPEED_3,
+        CONF_CONFIG_EXHAUST_FAN_AIRING_SPEED,
     ):
         if conf := config.get(key):
             sens = await sensor.new_sensor(conf)
