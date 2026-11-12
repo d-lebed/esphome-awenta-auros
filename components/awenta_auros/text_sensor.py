@@ -22,30 +22,40 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_ID): cv.declare_id(cg.EntityBase),
         cv.GenerateID(CONF_AWENTA_AUROS_ID): cv.use_id(AwentaAurosComponent),
-        cv.Optional(CONF_ACTIVE_FAN_SPEED): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_ACTIVE_FAN_SPEED): text_sensor.text_sensor_schema(
+            icon="mdi:fan",
+        ),
         cv.Optional(CONF_THERMOSTAT_MODE): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:thermostat",
         ),
         cv.Optional(CONF_CONFIG_SEASON_MODE): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:sun-snowflake-variant",
         ),
         cv.Optional(CONF_CONFIG_FAN_SPEED): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:fan-auto",
         ),
         cv.Optional(CONF_CONFIG_THERMOSTAT_MODE): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:thermostat-cog",
         ),
         cv.Optional(CONF_CONFIG_BYPASS_MODE): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:valve",
         ),
         cv.Optional(CONF_CONFIG_GHE_MODE): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:tunnel-outline",
         ),
         cv.Optional(CONF_TIME): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:clock-outline",
         ),
         cv.Optional(CONF_DAY_OF_WEEK): text_sensor.text_sensor_schema(
-            entity_category=ENTITY_CATEGORY_DIAGNOSTIC
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:calendar-today",
         ),
     }
 )

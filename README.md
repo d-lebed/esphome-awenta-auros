@@ -179,7 +179,7 @@ switch:
     fireplace:
       name: "Fireplace" # Fireplace mode / positive pressure (Reg 76: 0=Off, 1=On)
     ghe:
-      name: "GHE" # Air intake pre-heater (Reg 78: 0=Off, 1=Auto)
+      name: "GHE" # Ground heat exchanger / GWC (Reg 78: 0=Off, 1=Auto)
 ```
 
 ---

@@ -49,31 +49,34 @@ CONF_CONFIG_EXHAUST_FAN_SPEED_3 = "config_exhaust_fan_speed_3"
 CONF_CONFIG_EXHAUST_FAN_AIRING_SPEED = "config_exhaust_fan_airing_speed"
 
 
-def _temp_schema() -> cv.Schema:
+def _temp_schema(icon: str) -> cv.Schema:
     return sensor.sensor_schema(
         unit_of_measurement=UNIT_CELSIUS,
         accuracy_decimals=1,
         device_class=DEVICE_CLASS_TEMPERATURE,
         state_class=STATE_CLASS_MEASUREMENT,
+        icon=icon,
     )
 
 
-def _diagnostic_temp_schema() -> cv.Schema:
+def _diagnostic_temp_schema(icon: str) -> cv.Schema:
     return sensor.sensor_schema(
         unit_of_measurement=UNIT_CELSIUS,
         accuracy_decimals=1,
         device_class=DEVICE_CLASS_TEMPERATURE,
         state_class=STATE_CLASS_MEASUREMENT,
         entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        icon=icon,
     )
 
 
-def _speed_schema() -> cv.Schema:
+def _speed_schema(icon: str) -> cv.Schema:
     return sensor.sensor_schema(
         unit_of_measurement=UNIT_PERCENT,
         accuracy_decimals=0,
         device_class=DEVICE_CLASS_SPEED,
         state_class=STATE_CLASS_MEASUREMENT,
+        icon=icon,
     )
 
 
@@ -92,32 +95,47 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_ID): cv.declare_id(cg.EntityBase),
         cv.GenerateID(CONF_AWENTA_AUROS_ID): cv.use_id(AwentaAurosComponent),
-        cv.Optional(CONF_TARGET_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_ROOM_TEMPERATURE): _temp_schema(),
+        cv.Optional(CONF_TARGET_TEMPERATURE): _temp_schema("mdi:thermometer-check"),
+        cv.Optional(CONF_ROOM_TEMPERATURE): _temp_schema("mdi:home-thermometer"),
         cv.Optional(CONF_ROOM_HUMIDITY): sensor.sensor_schema(
             unit_of_measurement=UNIT_PERCENT,
             accuracy_decimals=0,
             device_class=DEVICE_CLASS_HUMIDITY,
             state_class=STATE_CLASS_MEASUREMENT,
+            icon="mdi:water-percent",
         ),
-        cv.Optional(CONF_INTAKE_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_SUPPLY_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_PREHEATER_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_SUPPLY_TARGET_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_EXHAUST_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_EXTRACT_TEMPERATURE): _temp_schema(),
-        cv.Optional(CONF_TARGET_FAN_SPEED): _speed_schema(),
-        cv.Optional(CONF_INTAKE_FAN_SPEED): _speed_schema(),
-        cv.Optional(CONF_SUPPLY_FAN_SPEED): _speed_schema(),
-        cv.Optional(CONF_EXTRACT_FAN_SPEED): _speed_schema(),
-        cv.Optional(CONF_EXHAUST_FAN_SPEED): _speed_schema(),
-        cv.Optional(CONF_CONFIG_INTAKE_TEMPERATURE): _diagnostic_temp_schema(),
-        cv.Optional(CONF_CONFIG_COMFORT_TEMPERATURE): _diagnostic_temp_schema(),
-        cv.Optional(CONF_CONFIG_ECO_WINTER_TEMPERATURE): _diagnostic_temp_schema(),
-        cv.Optional(CONF_CONFIG_ECO_COOLING_TEMPERATURE): _diagnostic_temp_schema(),
-        cv.Optional(CONF_CONFIG_MANUAL_TEMPERATURE): _diagnostic_temp_schema(),
-        cv.Optional(CONF_CONFIG_AWAY_TEMPERATURE): _diagnostic_temp_schema(),
-        cv.Optional(CONF_CONFIG_PREHEATER_MIN_TEMPERATURE): _diagnostic_temp_schema(),
+        cv.Optional(CONF_INTAKE_TEMPERATURE): _temp_schema("mdi:home-import-outline"),
+        cv.Optional(CONF_SUPPLY_TEMPERATURE): _temp_schema("mdi:thermometer-chevron-down"),
+        cv.Optional(CONF_PREHEATER_TEMPERATURE): _temp_schema("mdi:heating-coil"),
+        cv.Optional(CONF_SUPPLY_TARGET_TEMPERATURE): _temp_schema("mdi:thermometer-auto"),
+        cv.Optional(CONF_EXHAUST_TEMPERATURE): _temp_schema("mdi:home-export-outline"),
+        cv.Optional(CONF_EXTRACT_TEMPERATURE): _temp_schema("mdi:thermometer-chevron-up"),
+        cv.Optional(CONF_TARGET_FAN_SPEED): _speed_schema("mdi:fan-auto"),
+        cv.Optional(CONF_INTAKE_FAN_SPEED): _speed_schema("mdi:fan-chevron-down"),
+        cv.Optional(CONF_SUPPLY_FAN_SPEED): _speed_schema("mdi:fan-chevron-down"),
+        cv.Optional(CONF_EXTRACT_FAN_SPEED): _speed_schema("mdi:fan-chevron-up"),
+        cv.Optional(CONF_EXHAUST_FAN_SPEED): _speed_schema("mdi:fan-chevron-up"),
+        cv.Optional(CONF_CONFIG_INTAKE_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:home-import-outline"
+        ),
+        cv.Optional(CONF_CONFIG_COMFORT_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:home-thermometer"
+        ),
+        cv.Optional(CONF_CONFIG_ECO_WINTER_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:snowflake-thermometer"
+        ),
+        cv.Optional(CONF_CONFIG_ECO_COOLING_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:sun-thermometer"
+        ),
+        cv.Optional(CONF_CONFIG_MANUAL_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:thermometer-lines"
+        ),
+        cv.Optional(CONF_CONFIG_AWAY_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:home-export-outline"
+        ),
+        cv.Optional(CONF_CONFIG_PREHEATER_MIN_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:heating-coil"
+        ),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_1): _diagnostic_speed_schema("mdi:fan-speed-1"),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_2): _diagnostic_speed_schema("mdi:fan-speed-2"),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_3): _diagnostic_speed_schema("mdi:fan-speed-3"),

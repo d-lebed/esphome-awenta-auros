@@ -19,8 +19,12 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_ID): cv.declare_id(cg.EntityBase),
         cv.GenerateID(CONF_AWENTA_AUROS_ID): cv.use_id(AwentaAurosComponent),
-        cv.Optional(CONF_COOLING_DEMAND): binary_sensor.binary_sensor_schema(),
-        cv.Optional(CONF_BYPASS_POSITION): binary_sensor.binary_sensor_schema(),
+        cv.Optional(CONF_COOLING_DEMAND): binary_sensor.binary_sensor_schema(
+            icon="mdi:snowflake",
+        ),
+        cv.Optional(CONF_BYPASS_POSITION): binary_sensor.binary_sensor_schema(
+            icon="mdi:valve",
+        ),
         cv.Optional(CONF_SCHEDULE_MODE): binary_sensor.binary_sensor_schema(
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
             icon="mdi:calendar-clock",

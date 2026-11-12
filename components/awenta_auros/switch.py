@@ -33,7 +33,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_GHE): switch.switch_schema(
             GheSwitch,
             device_class=DEVICE_CLASS_SWITCH,
-            icon="mdi:heating-coil",
+            icon="mdi:tunnel-outline",
         ),
     }
 )
