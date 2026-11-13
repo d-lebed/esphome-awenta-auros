@@ -219,6 +219,14 @@ number:
       name: "Exhaust Fan Speed 3 Setpoint" # Reg 147 (0..100%)
     exhaust_fan_airing_speed:
       name: "Exhaust Fan Airing Speed Setpoint" # Reg 148 (0..100%)
+    smooth_fan_speed:
+      name: "Smooth Fan Speed" # Optional 0..100% smooth fan control across Gears 1..3 + Airing
+      mode: slider
+      sfs_min_speed: 1 # Optional (default: 1)
+      sfs_max_speed: 99 # Optional (default: 99)
+      sfs_speed_1_default: 30 # Optional (default: 30)
+      sfs_speed_2_default: 60 # Optional (default: 60)
+      sfs_speed_3_default: 90 # Optional (default: 90)
 ```
 
 ---

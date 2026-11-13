@@ -30,6 +30,7 @@ ExhaustFanSpeed1Number = awenta_auros_ns.class_("ExhaustFanSpeed1Number", number
 ExhaustFanSpeed2Number = awenta_auros_ns.class_("ExhaustFanSpeed2Number", number.Number)
 ExhaustFanSpeed3Number = awenta_auros_ns.class_("ExhaustFanSpeed3Number", number.Number)
 ExhaustFanAiringSpeedNumber = awenta_auros_ns.class_("ExhaustFanAiringSpeedNumber", number.Number)
+SmoothFanSpeedNumber = awenta_auros_ns.class_("SmoothFanSpeedNumber", number.Number)
 
 CONF_COMFORT_TEMPERATURE = "comfort_temperature"
 CONF_ECO_WINTER_TEMPERATURE = "eco_winter_temperature"
@@ -45,6 +46,55 @@ CONF_EXHAUST_FAN_SPEED_1 = "exhaust_fan_speed_1"
 CONF_EXHAUST_FAN_SPEED_2 = "exhaust_fan_speed_2"
 CONF_EXHAUST_FAN_SPEED_3 = "exhaust_fan_speed_3"
 CONF_EXHAUST_FAN_AIRING_SPEED = "exhaust_fan_airing_speed"
+CONF_SMOOTH_FAN_SPEED = "smooth_fan_speed"
+
+CONF_SFS_MIN_SPEED = "sfs_min_speed"
+CONF_SFS_MAX_SPEED = "sfs_max_speed"
+CONF_SFS_SPEED_1_DEFAULT = "sfs_speed_1_default"
+CONF_SFS_SPEED_2_DEFAULT = "sfs_speed_2_default"
+CONF_SFS_SPEED_3_DEFAULT = "sfs_speed_3_default"
+
+
+def _validate_sfs_config(config: ConfigType) -> ConfigType:
+    min_spd = config[CONF_SFS_MIN_SPEED]
+    max_spd = config[CONF_SFS_MAX_SPEED]
+    def_1 = config[CONF_SFS_SPEED_1_DEFAULT]
+    def_2 = config[CONF_SFS_SPEED_2_DEFAULT]
+    def_3 = config[CONF_SFS_SPEED_3_DEFAULT]
+
+    if min_spd >= max_spd:
+        raise cv.Invalid(
+            f"sfs_min_speed ({min_spd}) must be strictly less than sfs_max_speed ({max_spd})"
+        )
+    if not (def_1 < def_2 < def_3):
+        raise cv.Invalid(
+            "Default speeds must be strictly ordered: "
+            f"sfs_speed_1_default ({def_1}) < sfs_speed_2_default ({def_2}) < sfs_speed_3_default ({def_3})"
+        )
+    if def_1 < min_spd or def_3 > max_spd:
+        raise cv.Invalid(
+            f"Default speeds ({def_1}, {def_2}, {def_3}) must be within "
+            f"[sfs_min_speed ({min_spd}) .. sfs_max_speed ({max_spd})]"
+        )
+    return config
+
+
+SMOOTH_FAN_SPEED_SCHEMA = cv.All(
+    number.number_schema(
+        SmoothFanSpeedNumber,
+        unit_of_measurement=UNIT_PERCENT,
+        icon="mdi:fan",
+    ).extend(
+        {
+            cv.Optional(CONF_SFS_MIN_SPEED, default=1): cv.int_range(min=1, max=98),
+            cv.Optional(CONF_SFS_MAX_SPEED, default=99): cv.int_range(min=2, max=99),
+            cv.Optional(CONF_SFS_SPEED_1_DEFAULT, default=30): cv.int_range(min=0, max=100),
+            cv.Optional(CONF_SFS_SPEED_2_DEFAULT, default=60): cv.int_range(min=0, max=100),
+            cv.Optional(CONF_SFS_SPEED_3_DEFAULT, default=90): cv.int_range(min=0, max=100),
+        }
+    ),
+    _validate_sfs_config,
+)
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -135,6 +185,7 @@ CONFIG_SCHEMA = cv.Schema(
             entity_category=ENTITY_CATEGORY_CONFIG,
             icon="mdi:fan-plus",
         ),
+        cv.Optional(CONF_SMOOTH_FAN_SPEED): SMOOTH_FAN_SPEED_SCHEMA,
     }
 )
 
@@ -172,3 +223,17 @@ async def to_code(config: ConfigType) -> None:
             num = await number.new_number(conf, min_value=0.0, max_value=100.0, step=1.0)
             await cg.register_parented(num, hub)
             cg.add(getattr(hub, setter)(num))
+
+    if conf := config.get(CONF_SMOOTH_FAN_SPEED):
+        num = await number.new_number(conf, min_value=0.0, max_value=100.0, step=1.0)
+        await cg.register_parented(num, hub)
+        cg.add(hub.set_smooth_fan_speed_number(num))
+        cg.add(
+            hub.configure_smooth_fan_speed(
+                conf[CONF_SFS_MIN_SPEED],
+                conf[CONF_SFS_MAX_SPEED],
+                conf[CONF_SFS_SPEED_1_DEFAULT],
+                conf[CONF_SFS_SPEED_2_DEFAULT],
+                conf[CONF_SFS_SPEED_3_DEFAULT],
+            )
+        )

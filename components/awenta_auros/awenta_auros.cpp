@@ -691,6 +691,13 @@ namespace esphome::awenta_auros
       }
 #endif
     }
+
+    if (reg_id == REG_FAN_MODE || reg_id == REG_AIRING ||
+        reg_id == REG_SUPPLY_FAN_SPEED_1 || reg_id == REG_SUPPLY_FAN_SPEED_2 ||
+        reg_id == REG_SUPPLY_FAN_SPEED_3)
+    {
+      this->update_smooth_fan_speed_from_bus_();
+    }
   }
 
   bool AwentaAurosComponent::has_pending_writes() const
@@ -721,6 +728,38 @@ namespace esphome::awenta_auros
   {
     int32_t mode = (int32_t)index;
     this->set_desired_register(REG_FAN_MODE, mode);
+    if (this->sfs_enabled_)
+    {
+      this->set_desired_register(REG_AIRING, 0);
+#ifdef USE_SWITCH
+      if (this->airing_switch_ != nullptr)
+      {
+        this->airing_switch_->publish_state(false);
+      }
+#endif
+      this->reset_sfs_fan_speeds_to_defaults();
+#ifdef USE_NUMBER
+      if (this->smooth_fan_speed_number_ != nullptr)
+      {
+        if (mode == 0)
+        {
+          this->smooth_fan_speed_number_->publish_state(0.0f);
+        }
+        else if (mode == 1)
+        {
+          this->smooth_fan_speed_number_->publish_state((float)this->sfs_speed_1_default_);
+        }
+        else if (mode == 2)
+        {
+          this->smooth_fan_speed_number_->publish_state((float)this->sfs_speed_2_default_);
+        }
+        else if (mode == 3)
+        {
+          this->smooth_fan_speed_number_->publish_state((float)this->sfs_speed_3_default_);
+        }
+      }
+#endif
+    }
 #ifdef USE_SELECT
     if (this->fan_mode_select_ != nullptr)
     {
@@ -861,6 +900,221 @@ namespace esphome::awenta_auros
     if (raw > 100)
       raw = 100;
     this->set_desired_register(reg_id, raw);
+  }
+
+  void AwentaAurosComponent::configure_smooth_fan_speed(uint8_t min_speed, uint8_t max_speed,
+                                                        uint8_t speed_1_default,
+                                                        uint8_t speed_2_default,
+                                                        uint8_t speed_3_default)
+  {
+    this->sfs_enabled_ = true;
+    this->sfs_min_speed_ = min_speed;
+    this->sfs_max_speed_ = max_speed;
+    this->sfs_speed_1_default_ = speed_1_default;
+    this->sfs_speed_2_default_ = speed_2_default;
+    this->sfs_speed_3_default_ = speed_3_default;
+  }
+
+  void AwentaAurosComponent::publish_fan_speed_numbers_(int32_t s1, int32_t s2, int32_t s3)
+  {
+#ifdef USE_NUMBER
+    if (this->supply_fan_speed_1_number_ != nullptr)
+      this->supply_fan_speed_1_number_->publish_state((float)s1);
+    if (this->supply_fan_speed_2_number_ != nullptr)
+      this->supply_fan_speed_2_number_->publish_state((float)s2);
+    if (this->supply_fan_speed_3_number_ != nullptr)
+      this->supply_fan_speed_3_number_->publish_state((float)s3);
+    if (this->exhaust_fan_speed_1_number_ != nullptr)
+      this->exhaust_fan_speed_1_number_->publish_state((float)s1);
+    if (this->exhaust_fan_speed_2_number_ != nullptr)
+      this->exhaust_fan_speed_2_number_->publish_state((float)s2);
+    if (this->exhaust_fan_speed_3_number_ != nullptr)
+      this->exhaust_fan_speed_3_number_->publish_state((float)s3);
+#endif
+  }
+
+  void AwentaAurosComponent::reset_sfs_fan_speeds_to_defaults()
+  {
+    if (!this->sfs_enabled_)
+      return;
+
+    int32_t s1 = this->sfs_speed_1_default_;
+    int32_t s2 = this->sfs_speed_2_default_;
+    int32_t s3 = this->sfs_speed_3_default_;
+
+    this->set_desired_register(REG_SUPPLY_FAN_SPEED_1, s1);
+    this->set_desired_register(REG_SUPPLY_FAN_SPEED_2, s2);
+    this->set_desired_register(REG_SUPPLY_FAN_SPEED_3, s3);
+    this->set_desired_register(REG_EXHAUST_FAN_SPEED_1, s1);
+    this->set_desired_register(REG_EXHAUST_FAN_SPEED_2, s2);
+    this->set_desired_register(REG_EXHAUST_FAN_SPEED_3, s3);
+
+    this->publish_fan_speed_numbers_(s1, s2, s3);
+  }
+
+  void AwentaAurosComponent::set_desired_smooth_fan_speed(float percent)
+  {
+    int32_t target = (int32_t)std::round(percent);
+    if (target < 0)
+      target = 0;
+    if (target > 100)
+      target = 100;
+
+    int32_t s1 = this->sfs_speed_1_default_;
+    int32_t s2 = this->sfs_speed_2_default_;
+    int32_t s3 = this->sfs_speed_3_default_;
+
+    if (target == 0)
+    {
+      this->reset_sfs_fan_speeds_to_defaults();
+      this->set_desired_register(REG_AIRING, 0);
+      this->set_desired_register(REG_FAN_MODE, 0);
+#ifdef USE_SWITCH
+      if (this->airing_switch_ != nullptr)
+        this->airing_switch_->publish_state(false);
+#endif
+#ifdef USE_SELECT
+      if (this->fan_mode_select_ != nullptr)
+        this->fan_mode_select_->publish_state(fan_mode_to_string(0));
+#endif
+#ifdef USE_CLIMATE
+      if (this->climate_ != nullptr)
+      {
+        this->climate_->apply_bus_fan_mode(0);
+        this->climate_->publish_state();
+      }
+#endif
+#ifdef USE_FAN
+      if (this->fan_ != nullptr)
+      {
+        this->fan_->apply_bus_fan_mode(0);
+        this->fan_->publish_state();
+      }
+#endif
+#ifdef USE_NUMBER
+      if (this->smooth_fan_speed_number_ != nullptr)
+        this->smooth_fan_speed_number_->publish_state(0.0f);
+#endif
+      return;
+    }
+
+    if (target >= 100)
+    {
+      this->reset_sfs_fan_speeds_to_defaults();
+      this->set_desired_register(REG_AIRING, 1);
+#ifdef USE_SWITCH
+      if (this->airing_switch_ != nullptr)
+        this->airing_switch_->publish_state(true);
+#endif
+#ifdef USE_NUMBER
+      if (this->smooth_fan_speed_number_ != nullptr)
+        this->smooth_fan_speed_number_->publish_state(100.0f);
+#endif
+      return;
+    }
+
+    if (target < (int32_t)this->sfs_min_speed_)
+      target = this->sfs_min_speed_;
+    if (target > (int32_t)this->sfs_max_speed_)
+      target = this->sfs_max_speed_;
+
+    int32_t span = (int32_t)this->sfs_max_speed_ - (int32_t)this->sfs_min_speed_ + 1;
+    int32_t offset = target - (int32_t)this->sfs_min_speed_;
+    int32_t gear = 1 + (offset * 3) / (span > 0 ? span : 1);
+    if (gear < 1)
+      gear = 1;
+    if (gear > 3)
+      gear = 3;
+
+    if (gear == 1)
+      s1 = target;
+    else if (gear == 2)
+      s2 = target;
+    else
+      s3 = target;
+
+    this->set_desired_register(REG_SUPPLY_FAN_SPEED_1, s1);
+    this->set_desired_register(REG_SUPPLY_FAN_SPEED_2, s2);
+    this->set_desired_register(REG_SUPPLY_FAN_SPEED_3, s3);
+    this->set_desired_register(REG_EXHAUST_FAN_SPEED_1, s1);
+    this->set_desired_register(REG_EXHAUST_FAN_SPEED_2, s2);
+    this->set_desired_register(REG_EXHAUST_FAN_SPEED_3, s3);
+    this->set_desired_register(REG_AIRING, 0);
+    this->set_desired_register(REG_FAN_MODE, gear);
+
+    this->publish_fan_speed_numbers_(s1, s2, s3);
+#ifdef USE_SWITCH
+    if (this->airing_switch_ != nullptr)
+      this->airing_switch_->publish_state(false);
+#endif
+#ifdef USE_SELECT
+    if (this->fan_mode_select_ != nullptr)
+      this->fan_mode_select_->publish_state(fan_mode_to_string(gear));
+#endif
+#ifdef USE_CLIMATE
+    if (this->climate_ != nullptr)
+    {
+      this->climate_->apply_bus_fan_mode(gear);
+      this->climate_->publish_state();
+    }
+#endif
+#ifdef USE_FAN
+    if (this->fan_ != nullptr)
+    {
+      this->fan_->apply_bus_fan_mode(gear);
+      this->fan_->publish_state();
+    }
+#endif
+#ifdef USE_NUMBER
+    if (this->smooth_fan_speed_number_ != nullptr)
+      this->smooth_fan_speed_number_->publish_state((float)target);
+#endif
+  }
+
+  void AwentaAurosComponent::update_smooth_fan_speed_from_bus_()
+  {
+#ifdef USE_NUMBER
+    if (!this->sfs_enabled_ || this->smooth_fan_speed_number_ == nullptr)
+      return;
+    if (this->has_pending_writes())
+      return;
+
+    const auto &airing_reg = this->managed_registers_[REG_AIRING];
+    if (airing_reg.has_current && airing_reg.current_raw != 0)
+    {
+      this->smooth_fan_speed_number_->publish_state(100.0f);
+      return;
+    }
+
+    const auto &fm_reg = this->managed_registers_[REG_FAN_MODE];
+    int32_t gear = this->last_bus_active_gear_;
+    if (fm_reg.has_current)
+    {
+      if (fm_reg.current_raw == 0)
+      {
+        this->smooth_fan_speed_number_->publish_state(0.0f);
+        return;
+      }
+      if (fm_reg.current_raw >= 1 && fm_reg.current_raw <= 3)
+      {
+        gear = fm_reg.current_raw;
+      }
+    }
+
+    if (gear == 0)
+    {
+      this->smooth_fan_speed_number_->publish_state(0.0f);
+      return;
+    }
+
+    uint16_t speed_reg = (gear == 1) ? REG_SUPPLY_FAN_SPEED_1
+                                     : ((gear == 2) ? REG_SUPPLY_FAN_SPEED_2 : REG_SUPPLY_FAN_SPEED_3);
+    const auto &sp_reg = this->managed_registers_[speed_reg];
+    if (sp_reg.has_current)
+    {
+      this->smooth_fan_speed_number_->publish_state((float)sp_reg.current_raw);
+    }
+#endif
   }
 
   void AwentaAurosComponent::set_climate_target_temperature(float temp_c)
@@ -1011,6 +1265,8 @@ namespace esphome::awenta_auros
 
     uint8_t raw_fs = rx_buffer[28] & 0x07;
     uint8_t active_gear = (raw_fs == 3) ? 1 : ((raw_fs == 5) ? 2 : ((raw_fs == 7) ? 3 : 0));
+    this->last_bus_active_gear_ = active_gear;
+    this->update_smooth_fan_speed_from_bus_();
 #ifdef USE_FAN
     if (this->fan_ != nullptr && active_gear > 0)
     {

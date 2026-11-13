@@ -98,6 +98,14 @@ number:
       name: "Exhaust Fan Speed 3 Setpoint"
     exhaust_fan_airing_speed:
       name: "Exhaust Fan Airing Speed Setpoint"
+    smooth_fan_speed:
+      name: "Smooth Fan Speed"
+      mode: slider
+      sfs_min_speed: 1
+      sfs_max_speed: 99
+      sfs_speed_1_default: 30
+      sfs_speed_2_default: 60
+      sfs_speed_3_default: 90
 
 binary_sensor:
   - platform: awenta_auros

@@ -164,6 +164,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_NUMBER(exhaust_fan_speed_2)
   SUB_NUMBER(exhaust_fan_speed_3)
   SUB_NUMBER(exhaust_fan_airing_speed)
+  SUB_NUMBER(smooth_fan_speed)
 #endif
 
  public:
@@ -257,6 +258,12 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void set_desired_fan_speed_percent(uint16_t reg_id, float percent);
   void set_climate_target_temperature(float temp_c);
 
+  void configure_smooth_fan_speed(uint8_t min_speed, uint8_t max_speed,
+                                  uint8_t speed_1_default, uint8_t speed_2_default,
+                                  uint8_t speed_3_default);
+  void set_desired_smooth_fan_speed(float percent);
+  void reset_sfs_fan_speeds_to_defaults();
+
  protected:
   static float decode_value_(uint8_t h, uint8_t l);
   static void encode_value_(float value, uint8_t &h, uint8_t &l);
@@ -280,9 +287,19 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
                      const std::array<uint16_t, 6> &d_raw_values,
                      uint8_t sender_addr, const std::string &probe_label);
   void execute_scheduled_write_();
+  void publish_fan_speed_numbers_(int32_t s1, int32_t s2, int32_t s3);
+  void update_smooth_fan_speed_from_bus_();
 
   std::vector<uint8_t> rx_buffer_;
   std::map<uint16_t, ManagedRegister> managed_registers_;
+
+  bool sfs_enabled_{false};
+  uint8_t sfs_min_speed_{1};
+  uint8_t sfs_max_speed_{99};
+  uint8_t sfs_speed_1_default_{30};
+  uint8_t sfs_speed_2_default_{60};
+  uint8_t sfs_speed_3_default_{90};
+  uint8_t last_bus_active_gear_{0};
 
   GPIOPin *flow_control_pin_{nullptr};
 #ifdef USE_TIME
@@ -468,6 +485,13 @@ class ExhaustFanAiringSpeedNumber final : public number::Number, public Parented
   void control(float value) override {
     this->publish_state(value);
     this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_EXHAUST_FAN_AIRING_SPEED, value);
+  }
+};
+
+class SmoothFanSpeedNumber final : public number::Number, public Parented<AwentaAurosComponent> {
+ protected:
+  void control(float value) override {
+    this->parent_->set_desired_smooth_fan_speed(value);
   }
 };
 #endif
