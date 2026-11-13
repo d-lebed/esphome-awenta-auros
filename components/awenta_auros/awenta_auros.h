@@ -315,8 +315,6 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   bool tx_scheduled_{false};
   uint32_t scheduled_tx_time_ms_{0};
   uint32_t inext_window_start_ms_{0};
-  std::array<uint16_t, 6> last_tx_regs_{0, 0, 0, 0, 0, 0};
-  std::array<int32_t, 6> last_tx_raw_values_{0, 0, 0, 0, 0, 0};
   bool is_away_active_{false};
 
   uint16_t current_year_{2026};
