@@ -1,8 +1,7 @@
 #include "awenta_auros_fan.h"
+#include "../awenta_auros.h"
 
-#ifdef USE_FAN
 #include <cstring>
-#include "awenta_auros.h"
 
 namespace esphome::awenta_auros {
 
@@ -244,4 +243,3 @@ void AwentaAurosFan::control(const fan::FanCall &call) {
 }
 
 }  // namespace esphome::awenta_auros
-#endif

@@ -15,7 +15,7 @@ void AwentaAurosComponent::dump_config() {
   LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
 }
 
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
 void AwentaAurosComponent::set_climate(AwentaAurosClimate *clim) {
   this->climate_ = clim;
   if (clim != nullptr) {
@@ -24,7 +24,7 @@ void AwentaAurosComponent::set_climate(AwentaAurosClimate *clim) {
 }
 #endif
 
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
 void AwentaAurosComponent::set_fan(AwentaAurosFan *f) {
   this->fan_ = f;
   if (f != nullptr) {

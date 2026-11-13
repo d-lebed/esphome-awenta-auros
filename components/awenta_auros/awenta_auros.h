@@ -36,8 +36,12 @@
 #include <vector>
 
 #include "c14_protocol.h"
-#include "awenta_auros_climate.h"
-#include "awenta_auros_fan.h"
+#ifdef USE_AWENTA_AUROS_CLIMATE
+#include "climate/awenta_auros_climate.h"
+#endif
+#ifdef USE_AWENTA_AUROS_FAN
+#include "fan/awenta_auros_fan.h"
+#endif
 
 namespace esphome::awenta_auros {
 
@@ -143,10 +147,10 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
 #ifdef USE_TIME
   void set_time(time::RealTimeClock *time) { this->time_ = time; }
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
   void set_climate(AwentaAurosClimate *clim);
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
   void set_fan(AwentaAurosFan *f);
 #endif
 
@@ -218,10 +222,10 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
 #ifdef USE_TIME
   time::RealTimeClock *time_{nullptr};
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
   AwentaAurosClimate *climate_{nullptr};
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
   AwentaAurosFan *fan_{nullptr};
 #endif
 
@@ -238,5 +242,3 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
 };
 
 }  // namespace esphome::awenta_auros
-
-#include "awenta_auros_entities.h"

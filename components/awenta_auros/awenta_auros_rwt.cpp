@@ -41,13 +41,13 @@ void AwentaAurosComponent::update_register_current(uint16_t reg_id, int32_t curr
         }
       }
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
       if (this->climate_ != nullptr) {
         this->climate_->apply_bus_fan_mode(current_raw);
         this->climate_->publish_state();
       }
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
       if (this->fan_ != nullptr) {
         this->fan_->apply_bus_fan_mode(current_raw);
         this->fan_->publish_state();
@@ -62,7 +62,7 @@ void AwentaAurosComponent::update_register_current(uint16_t reg_id, int32_t curr
         }
       }
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
       if (this->climate_ != nullptr) {
         this->climate_->apply_bus_preset(current_raw);
         this->climate_->publish_state();
@@ -188,13 +188,13 @@ void AwentaAurosComponent::set_desired_fan_mode_index(size_t index) {
     this->fan_mode_select_->publish_state(fan_mode_to_string(mode));
   }
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
   if (this->climate_ != nullptr) {
     this->climate_->apply_bus_fan_mode(mode);
     this->climate_->publish_state();
   }
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
   if (this->fan_ != nullptr) {
     if (this->sfs_enabled_) {
       int32_t sp = 0;
@@ -235,7 +235,7 @@ void AwentaAurosComponent::set_desired_thermostat_mode_index(size_t index) {
     this->thermostat_mode_select_->publish_state(thermostat_mode_to_string(mode));
   }
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
   if (this->climate_ != nullptr) {
     this->climate_->apply_bus_preset(mode);
     if (mode == 2 && this->managed_registers_[REG_MANUAL_TEMP].has_current) {
@@ -288,7 +288,7 @@ void AwentaAurosComponent::set_desired_season_mode(int32_t season_mode) {
 void AwentaAurosComponent::set_desired_temperature(uint16_t reg_id, float temp_c) {
   int32_t raw = (int32_t) std::round(temp_c * 10.0f);
   this->set_desired_register(reg_id, raw);
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
   if (reg_id == REG_MANUAL_TEMP && this->climate_ != nullptr) {
     const auto &treg = this->managed_registers_[REG_THERMOSTAT_MODE];
     int32_t active_therm =
@@ -344,7 +344,7 @@ void AwentaAurosComponent::configure_smooth_fan_speed(uint8_t min_speed, uint8_t
   this->sfs_speed_1_default_ = speed_1_default;
   this->sfs_speed_2_default_ = speed_2_default;
   this->sfs_speed_3_default_ = speed_3_default;
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
   if (this->fan_ != nullptr) {
     this->fan_->enable_smooth_speed_mode(speed_1_default, speed_2_default, speed_3_default);
   }
@@ -409,13 +409,13 @@ void AwentaAurosComponent::set_desired_smooth_fan_speed(float percent) {
     if (this->fan_mode_select_ != nullptr)
       this->fan_mode_select_->publish_state(fan_mode_to_string(0));
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
     if (this->climate_ != nullptr) {
       this->climate_->apply_bus_fan_mode(0);
       this->climate_->publish_state();
     }
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
     if (this->fan_ != nullptr) {
       this->fan_->apply_smooth_speed_state(0, 0, false);
     }
@@ -434,7 +434,7 @@ void AwentaAurosComponent::set_desired_smooth_fan_speed(float percent) {
     if (this->airing_switch_ != nullptr)
       this->airing_switch_->publish_state(true);
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
     if (this->fan_ != nullptr) {
       this->fan_->apply_smooth_speed_state(100, -1, true);
     }
@@ -484,13 +484,13 @@ void AwentaAurosComponent::set_desired_smooth_fan_speed(float percent) {
   if (this->fan_mode_select_ != nullptr)
     this->fan_mode_select_->publish_state(fan_mode_to_string(gear));
 #endif
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
   if (this->climate_ != nullptr) {
     this->climate_->apply_bus_fan_mode(gear);
     this->climate_->publish_state();
   }
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
   if (this->fan_ != nullptr) {
     this->fan_->apply_smooth_speed_state(target, gear, false);
   }
@@ -513,7 +513,7 @@ void AwentaAurosComponent::update_smooth_fan_speed_from_bus_() {
     if (this->smooth_fan_speed_number_ != nullptr)
       this->smooth_fan_speed_number_->publish_state(100.0f);
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
     if (this->fan_ != nullptr)
       this->fan_->apply_smooth_speed_state(100, -1, true);
 #endif
@@ -529,7 +529,7 @@ void AwentaAurosComponent::update_smooth_fan_speed_from_bus_() {
       if (this->smooth_fan_speed_number_ != nullptr)
         this->smooth_fan_speed_number_->publish_state(0.0f);
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
       if (this->fan_ != nullptr)
         this->fan_->apply_smooth_speed_state(0, 0, false);
 #endif
@@ -545,7 +545,7 @@ void AwentaAurosComponent::update_smooth_fan_speed_from_bus_() {
     if (this->smooth_fan_speed_number_ != nullptr)
       this->smooth_fan_speed_number_->publish_state(0.0f);
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
     if (this->fan_ != nullptr)
       this->fan_->apply_smooth_speed_state(0, 0, false);
 #endif
@@ -560,7 +560,7 @@ void AwentaAurosComponent::update_smooth_fan_speed_from_bus_() {
     if (this->smooth_fan_speed_number_ != nullptr)
       this->smooth_fan_speed_number_->publish_state((float) sp_reg.current_raw);
 #endif
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
     if (this->fan_ != nullptr)
       this->fan_->apply_smooth_speed_state(sp_reg.current_raw, fm, false);
 #endif

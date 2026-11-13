@@ -1,9 +1,6 @@
 #pragma once
 
-#include "esphome/core/defines.h"
 #include "esphome/core/component.h"
-
-#ifdef USE_CLIMATE
 #include "esphome/components/climate/climate.h"
 
 namespace esphome::awenta_auros {
@@ -27,4 +24,3 @@ class AwentaAurosClimate : public climate::Climate, public Component {
 };
 
 }  // namespace esphome::awenta_auros
-#endif

@@ -13,7 +13,7 @@ from esphome.const import (
 )
 from esphome.types import ConfigType
 
-from . import CONF_AWENTA_AUROS_ID, AwentaAurosComponent
+from .. import CONF_AWENTA_AUROS_ID, AwentaAurosComponent
 
 DEPENDENCIES = ["awenta_auros"]
 

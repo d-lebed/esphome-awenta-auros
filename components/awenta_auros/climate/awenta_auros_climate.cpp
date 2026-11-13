@@ -1,7 +1,5 @@
 #include "awenta_auros_climate.h"
-
-#ifdef USE_CLIMATE
-#include "awenta_auros.h"
+#include "../awenta_auros.h"
 
 namespace esphome::awenta_auros {
 
@@ -146,4 +144,3 @@ void AwentaAurosClimate::control(const climate::ClimateCall &call) {
 }
 
 }  // namespace esphome::awenta_auros
-#endif

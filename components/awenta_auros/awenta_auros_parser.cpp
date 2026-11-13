@@ -120,7 +120,7 @@ void AwentaAurosComponent::handle_master_status_(const std::vector<uint8_t> &rx_
   uint8_t active_gear = (raw_fs == 3) ? 1 : ((raw_fs == 5) ? 2 : ((raw_fs == 7) ? 3 : 0));
   this->last_bus_active_gear_ = active_gear;
   this->update_smooth_fan_speed_from_bus_();
-#ifdef USE_FAN
+#ifdef USE_AWENTA_AUROS_FAN
   if (this->fan_ != nullptr && active_gear > 0) {
     this->fan_->apply_bus_active_gear(active_gear);
   }
@@ -142,7 +142,7 @@ void AwentaAurosComponent::handle_master_status_(const std::vector<uint8_t> &rx_
   }
 #endif
 
-#ifdef USE_CLIMATE
+#ifdef USE_AWENTA_AUROS_CLIMATE
   if (this->climate_ != nullptr) {
     this->climate_->current_temperature = room_temp;
     this->climate_->current_humidity = rx_buffer[23];

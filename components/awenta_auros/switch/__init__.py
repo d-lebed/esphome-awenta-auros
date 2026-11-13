@@ -4,7 +4,7 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID, DEVICE_CLASS_SWITCH
 from esphome.types import ConfigType
 
-from . import CONF_AWENTA_AUROS_ID, AwentaAurosComponent, awenta_auros_ns
+from .. import CONF_AWENTA_AUROS_ID, AwentaAurosComponent, awenta_auros_ns
 
 DEPENDENCIES = ["awenta_auros"]
 

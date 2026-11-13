@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Project Documentation:** Added `CHANGELOG.md` and `AGENTS.md`.
 
 ### Changed
-- **Modular C++ Architecture:** Split the monolithic `awenta_auros.h` / `awenta_auros.cpp` implementation into focused modules: `c14_protocol.{h,cpp}`, `awenta_auros_climate.{h,cpp}`, `awenta_auros_fan.{h,cpp}`, `awenta_auros_entities.h`, `awenta_auros_parser.cpp`, `awenta_auros_rwt.cpp`, and `awenta_auros.{h,cpp}`.
+- **Standard ESPHome Platform Subpackage Layout:** Reorganized `components/awenta_auros/` into the idiomatic ESPHome multi-platform directory structure (`climate/`, `fan/`, `select/`, `switch/`, `number/`, `sensor/`, `binary_sensor/`, `text_sensor/` subpackages pairing Python schemas with their C++ entity headers/sources, while keeping hub & C14 protocol modules `c14_protocol.{h,cpp}`, `awenta_auros.{h,cpp}`, `awenta_auros_parser.cpp`, and `awenta_auros_rwt.cpp` at the component root).
 
 ### Fixed
 - **Immediate `'w'` Write-Response Slot Confirmation:** Decoded echoed `[reg_id, value]` slots in `'w'` (`0x77`) responses identically to `'r'` (`0x72`) responses so `current_raw` updates and `has_desired` clears immediately (~200 ms after TX) instead of waiting up to ~38 s for the next `E3 44` (`0x39`) broadcast page.

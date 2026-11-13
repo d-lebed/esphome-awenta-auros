@@ -26,35 +26,46 @@ This repository contains the **`awenta_auros`** ESPHome external component for *
 
 ## 2. Repository Layout & Architecture
 
+Following standard ESPHome multi-platform conventions (such as `opentherm` and `tuya`), the component root holds only the hub and C14 protocol files, while each ESPHome entity platform lives in its own subpackage directory pairing Python schema/codegen (`__init__.py`) with its C++ implementation:
+
 ```text
 components/awenta_auros/
-├── __init__.py                 # Hub schema (uart_id, flow_control_pin, time_id)
-├── climate.py                  # Climate platform schema & codegen
-├── fan.py                      # Fan platform schema & codegen
-├── select.py                   # Select platform (fan_mode, thermostat_mode, bypass_mode)
-├── switch.py                   # Switch platform (airing, fireplace, ghe)
-├── number.py                   # Number platform (setpoints, fan speeds, smooth_fan_speed)
-├── sensor.py                   # Sensor platform (telemetry, efficiency, diagnostic config_*)
-├── binary_sensor.py            # Binary sensor platform (demands, bypass, diagnostic config_*)
-├── text_sensor.py              # Text sensor platform (active gear, diagnostic modes, clock)
-├── c14_protocol.h / .cpp       # C14 addresses, register IDs, 7-bit codec, checksum, enum strings
-├── awenta_auros.h / .cpp       # AwentaAurosComponent hub declaration & UART byte-sync loop
-├── awenta_auros_parser.cpp     # Passive C14 broadcast decoder (E4 21, E5 21, E3 44) & efficiency
-├── awenta_auros_rwt.cpp        # Register state-diff manager, iNext F0 44 TX/RX, smooth_fan_speed
-├── awenta_auros_climate.h/.cpp # AwentaAurosClimate implementation
-├── awenta_auros_fan.h / .cpp   # AwentaAurosFan implementation (3-speed & 0..100% smooth mode)
-└── awenta_auros_entities.h     # Parented Select, Switch, and Number entity subclasses
+├── __init__.py                         # Hub schema (uart_id, flow_control_pin, time_id)
+├── c14_protocol.h / .cpp               # C14 addresses, register IDs, 7-bit codec, checksum, enum strings
+├── awenta_auros.h / .cpp               # AwentaAurosComponent hub declaration & UART byte-sync loop
+├── awenta_auros_parser.cpp             # Passive C14 broadcast decoder (E4 21, E5 21, E3 44) & efficiency
+├── awenta_auros_rwt.cpp                # Register state-diff manager, iNext F0 44 TX/RX, smooth_fan_speed
+├── binary_sensor/
+│   └── __init__.py                     # Binary sensor platform (demands, bypass, diagnostic config_*)
+├── climate/
+│   ├── __init__.py                     # Climate platform schema & USE_AWENTA_AUROS_CLIMATE define
+│   └── awenta_auros_climate.h / .cpp   # AwentaAurosClimate implementation
+├── fan/
+│   ├── __init__.py                     # Fan platform schema & USE_AWENTA_AUROS_FAN define
+│   └── awenta_auros_fan.h / .cpp       # AwentaAurosFan implementation (3-speed & 0..100% smooth mode)
+├── number/
+│   ├── __init__.py                     # Number platform (setpoints, fan speeds, smooth_fan_speed)
+│   └── awenta_auros_number.h / .cpp    # Parented Number subclasses
+├── select/
+│   ├── __init__.py                     # Select platform (fan_mode, thermostat_mode, bypass_mode)
+│   └── awenta_auros_select.h / .cpp    # Parented Select subclasses
+├── sensor/
+│   └── __init__.py                     # Sensor platform (telemetry, efficiency, diagnostic config_*)
+├── switch/
+│   ├── __init__.py                     # Switch platform (airing, fireplace, ghe)
+│   └── awenta_auros_switch.h / .cpp    # Parented Switch subclasses
+└── text_sensor/
+    └── __init__.py                     # Text sensor platform (active gear, diagnostic modes, clock)
 docs/
-├── PROTOCOL.md                 # C14 30-byte frame format, broadcast cycle, iNext F0 44 timing
-└── REGISTERS.md                # Verified NANO COLOR 2 (v6.02) + AERO 4A2 register map
+├── PROTOCOL.md                         # C14 30-byte frame format, broadcast cycle, iNext F0 44 timing
+└── REGISTERS.md                        # Verified NANO COLOR 2 (v6.02) + AERO 4A2 register map
 ```
 
-### Important ESPHome Header Inclusion Rule
-ESPHome's build system (`writer.copy_src_tree`) collects **all** `.h` files in `components/awenta_auros/` and `#include`s every one of them into the generated `esphome.h` in **alphabetical order** (`awenta_auros_climate.h`, `awenta_auros_entities.h`, `awenta_auros_fan.h`, `awenta_auros.h`, `c14_protocol.h`).
-- Every `.h` file **must** use `#pragma once` and be completely self-contained regardless of inclusion order:
-  - Headers that only hold `AwentaAurosComponent *parent_` (`awenta_auros_climate.h`, `awenta_auros_fan.h`) forward-declare `class AwentaAurosComponent;`.
-  - Headers that inherit `Parented<AwentaAurosComponent>` (`awenta_auros_entities.h`) must `#include "awenta_auros.h"` at the top.
-  - Guard all platform-specific includes, `SUB_*` macros, fields, and classes with `#ifdef USE_CLIMATE`, `#ifdef USE_FAN`, `#ifdef USE_SELECT`, `#ifdef USE_SWITCH`, `#ifdef USE_NUMBER`, `#ifdef USE_SENSOR`, `#ifdef USE_BINARY_SENSOR`, `#ifdef USE_TEXT_SENSOR`, and `#ifdef USE_TIME` so minimal YAML configs compile cleanly when optional platforms are omitted.
+### Important ESPHome Subpackage & Header Rules
+ESPHome's build system loads each platform directory (`climate/`, `fan/`, `number/`, `select/`, `switch/`, etc.) as an independent subpackage and **only copies/compiles its `.h` and `.cpp` files when that platform is configured in the user's YAML**:
+- Every `.h` file **must** use `#pragma once` and be completely self-contained.
+- In `climate/__init__.py` and `fan/__init__.py`, `cg.add_define("USE_AWENTA_AUROS_CLIMATE")` and `cg.add_define("USE_AWENTA_AUROS_FAN")` guard `#include "climate/awenta_auros_climate.h"` and `#include "fan/awenta_auros_fan.h"` in the hub (`awenta_auros.h`, `awenta_auros.cpp`, `awenta_auros_parser.cpp`, `awenta_auros_rwt.cpp`). Do **not** use bare `#ifdef USE_CLIMATE` / `#ifdef USE_FAN` to include `awenta_auros` platform headers, because another unrelated climate/fan platform on the same ESP32 would define `USE_CLIMATE` without copying `climate/awenta_auros_climate.h`.
+- Guard generic hub entity pointers (`SUB_SELECT`, `SUB_SWITCH`, `SUB_NUMBER`, `SUB_SENSOR`, `SUB_BINARY_SENSOR`, `SUB_TEXT_SENSOR`, `time_`) with `#ifdef USE_SELECT`, `#ifdef USE_SWITCH`, `#ifdef USE_NUMBER`, `#ifdef USE_SENSOR`, `#ifdef USE_BINARY_SENSOR`, `#ifdef USE_TEXT_SENSOR`, and `#ifdef USE_TIME`.
 
 ---
 

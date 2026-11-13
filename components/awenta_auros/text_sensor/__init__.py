@@ -4,7 +4,7 @@ import esphome.config_validation as cv
 from esphome.const import CONF_ID, ENTITY_CATEGORY_DIAGNOSTIC
 from esphome.types import ConfigType
 
-from . import CONF_AWENTA_AUROS_ID, AwentaAurosComponent
+from .. import CONF_AWENTA_AUROS_ID, AwentaAurosComponent
 
 DEPENDENCIES = ["awenta_auros"]
 

@@ -1,9 +1,6 @@
 #pragma once
 
-#include "esphome/core/defines.h"
 #include "esphome/core/component.h"
-
-#ifdef USE_FAN
 #include "esphome/components/fan/fan.h"
 
 namespace esphome::awenta_auros {
@@ -36,4 +33,3 @@ class AwentaAurosFan : public fan::Fan, public Component {
 };
 
 }  // namespace esphome::awenta_auros
-#endif
