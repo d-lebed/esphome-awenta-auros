@@ -7,9 +7,6 @@
 #include "esphome/core/log.h"
 #include "esphome/components/uart/uart.h"
 
-#ifdef USE_TIME
-#include "esphome/components/time/real_time_clock.h"
-#endif
 #ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
 #endif
@@ -147,9 +144,6 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void dump_config() override;
 
   void set_flow_control_pin(GPIOPin *pin) { this->flow_control_pin_ = pin; }
-#ifdef USE_TIME
-  void set_time(time::RealTimeClock *time) { this->time_ = time; }
-#endif
 #ifdef USE_AWENTA_AUROS_CLIMATE
   void set_climate(AwentaAurosClimate *clim);
 #endif
@@ -224,9 +218,6 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   uint8_t last_bus_active_gear_{0};
 
   GPIOPin *flow_control_pin_{nullptr};
-#ifdef USE_TIME
-  time::RealTimeClock *time_{nullptr};
-#endif
 #ifdef USE_AWENTA_AUROS_CLIMATE
   AwentaAurosClimate *climate_{nullptr};
 #endif

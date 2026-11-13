@@ -30,7 +30,7 @@ Following standard ESPHome multi-platform conventions (such as `opentherm` and `
 
 ```text
 components/awenta_auros/
-├── __init__.py                         # Hub schema (uart_id, flow_control_pin, time_id)
+├── __init__.py                         # Hub schema (uart_id, flow_control_pin)
 ├── c14_protocol.h / .cpp               # C14 addresses, register IDs, 7-bit codec, checksum, enum strings
 ├── awenta_auros.h / .cpp               # AwentaAurosComponent hub declaration & UART byte-sync loop
 ├── awenta_auros_parser.cpp             # Passive C14 broadcast decoder (E4 21, E5 21, E3 44) & efficiency
@@ -65,7 +65,7 @@ docs/
 ESPHome's build system loads each platform directory (`climate/`, `fan/`, `number/`, `select/`, `switch/`, etc.) as an independent subpackage and **only copies/compiles its `.h` and `.cpp` files when that platform is configured in the user's YAML**:
 - Every `.h` file **must** use `#pragma once` and be completely self-contained.
 - In `climate/__init__.py` and `fan/__init__.py`, `cg.add_define("USE_AWENTA_AUROS_CLIMATE")` and `cg.add_define("USE_AWENTA_AUROS_FAN")` guard `#include "climate/awenta_auros_climate.h"` and `#include "fan/awenta_auros_fan.h"` in the hub (`awenta_auros.h`, `awenta_auros.cpp`, `awenta_auros_parser.cpp`, `awenta_auros_rwt.cpp`). Do **not** use bare `#ifdef USE_CLIMATE` / `#ifdef USE_FAN` to include `awenta_auros` platform headers, because another unrelated climate/fan platform on the same ESP32 would define `USE_CLIMATE` without copying `climate/awenta_auros_climate.h`.
-- Guard generic hub entity pointers (`SUB_SELECT`, `SUB_SWITCH`, `SUB_NUMBER`, `SUB_SENSOR`, `SUB_BINARY_SENSOR`, `SUB_TEXT_SENSOR`, `time_`) with `#ifdef USE_SELECT`, `#ifdef USE_SWITCH`, `#ifdef USE_NUMBER`, `#ifdef USE_SENSOR`, `#ifdef USE_BINARY_SENSOR`, `#ifdef USE_TEXT_SENSOR`, and `#ifdef USE_TIME`.
+- Guard generic hub entity pointers (`SUB_SELECT`, `SUB_SWITCH`, `SUB_NUMBER`, `SUB_SENSOR`, `SUB_BINARY_SENSOR`, `SUB_TEXT_SENSOR`) with `#ifdef USE_SELECT`, `#ifdef USE_SWITCH`, `#ifdef USE_NUMBER`, `#ifdef USE_SENSOR`, `#ifdef USE_BINARY_SENSOR`, and `#ifdef USE_TEXT_SENSOR`.
 
 ---
 

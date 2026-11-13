@@ -1,8 +1,8 @@
 from esphome import pins
 import esphome.codegen as cg
-from esphome.components import time, uart
+from esphome.components import uart
 import esphome.config_validation as cv
-from esphome.const import CONF_FLOW_CONTROL_PIN, CONF_ID, CONF_TIME_ID
+from esphome.const import CONF_FLOW_CONTROL_PIN, CONF_ID
 from esphome.types import ConfigType
 
 DEPENDENCIES = ["uart"]
@@ -22,7 +22,6 @@ CONFIG_SCHEMA = (
         {
             cv.GenerateID(): cv.declare_id(AwentaAurosComponent),
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
-            cv.Optional(CONF_TIME_ID): cv.use_id(time.RealTimeClock),
         }
     )
     .extend(uart.UART_DEVICE_SCHEMA)
@@ -37,6 +36,3 @@ async def to_code(config: ConfigType) -> None:
     if flow_control_pin_config := config.get(CONF_FLOW_CONTROL_PIN):
         pin = await cg.gpio_pin_expression(flow_control_pin_config)
         cg.add(var.set_flow_control_pin(pin))
-    if time_id := config.get(CONF_TIME_ID):
-        time_comp = await cg.get_variable(time_id)
-        cg.add(var.set_time(time_comp))

@@ -120,7 +120,6 @@ awenta_auros:
   id: awenta_hub
   uart_id: rs485_bus
   flow_control_pin: GPIO21 # Optional: DE/RE direction control pin for RS-485 transceiver
-  time_id: awenta_time # Optional: RealTimeClock ID
 ```
 
 ---
