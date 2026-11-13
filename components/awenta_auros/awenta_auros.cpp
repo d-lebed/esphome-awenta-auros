@@ -1520,7 +1520,7 @@ namespace esphome::awenta_auros
 
     uint8_t target_fan_speed = rx_buffer[22];
     uint8_t intake_fan_speed = rx_buffer[25];
-    uint8_t supply_fan_speed = rx_buffer[26];
+    uint8_t exhaust_fan_speed = rx_buffer[26];
     uint8_t bypass_pos = rx_buffer[28];
 
 #ifdef USE_SENSOR
@@ -1534,8 +1534,8 @@ namespace esphome::awenta_auros
       this->target_fan_speed_sensor_->publish_state(target_fan_speed);
     if (this->intake_fan_speed_sensor_ != nullptr)
       this->intake_fan_speed_sensor_->publish_state(intake_fan_speed);
-    if (this->supply_fan_speed_sensor_ != nullptr)
-      this->supply_fan_speed_sensor_->publish_state(supply_fan_speed);
+    if (this->exhaust_fan_speed_sensor_ != nullptr)
+      this->exhaust_fan_speed_sensor_->publish_state(exhaust_fan_speed);
     if (this->supply_target_temperature_sensor_ != nullptr)
       this->supply_target_temperature_sensor_->publish_state(supply_target_temp);
 #endif
@@ -1557,8 +1557,8 @@ namespace esphome::awenta_auros
   {
     float exhaust_temp = decode_value_(rx_buffer[16], rx_buffer[17]);
     float extract_temp = decode_value_(rx_buffer[18], rx_buffer[19]);
-    uint8_t extract_fan_speed = rx_buffer[14];
-    uint8_t exhaust_fan_speed = rx_buffer[15];
+    uint8_t supply_fan_speed = rx_buffer[14];
+    uint8_t extract_fan_speed = rx_buffer[15];
 
     this->last_exhaust_temp_ = exhaust_temp;
     this->last_extract_temp_ = extract_temp;
@@ -1570,10 +1570,10 @@ namespace esphome::awenta_auros
       this->exhaust_temperature_sensor_->publish_state(exhaust_temp);
     if (this->extract_temperature_sensor_ != nullptr)
       this->extract_temperature_sensor_->publish_state(extract_temp);
+    if (this->supply_fan_speed_sensor_ != nullptr)
+      this->supply_fan_speed_sensor_->publish_state(supply_fan_speed);
     if (this->extract_fan_speed_sensor_ != nullptr)
       this->extract_fan_speed_sensor_->publish_state(extract_fan_speed);
-    if (this->exhaust_fan_speed_sensor_ != nullptr)
-      this->exhaust_fan_speed_sensor_->publish_state(exhaust_fan_speed);
 #endif
 
     ESP_LOGD(TAG, "Unparsed aero secondary bytes: [5]=%02X [6..13]=%.1f %.1f %.1f %.1f [28]=%02X",

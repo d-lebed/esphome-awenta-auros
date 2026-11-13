@@ -106,12 +106,12 @@ During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.
    - `f[18..19]`: Supply target temperature.
    - `f[22]`: Target fan speed (`%`).
    - `f[25]`: Intake fan speed (`%`).
-   - `f[26]`: Supply fan speed (`%`).
+   - `f[26]`: Exhaust fan speed (`%`).
    - `f[28]`: Bypass damper position (bit `0x20` = Open).
 
 4. **`E3 56` (`From: 41 -> To: 99`, command `'V'`) → `E5 21` (`From: 99 -> To: 101`, command `'!'`) — AERO 4A2 Secondary Telemetry:**
-   - `f[14]`: Extract fan speed (`%`).
-   - `f[15]`: Exhaust fan speed (`%`).
+   - `f[14]`: Supply fan speed (`%`).
+   - `f[15]`: Extract fan speed (`%`).
    - `f[16..17]`: Exhaust air temperature.
    - `f[18..19]`: Extract (indoor return) air temperature.
 
