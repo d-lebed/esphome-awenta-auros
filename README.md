@@ -180,6 +180,10 @@ switch:
       name: "Fireplace" # Fireplace mode / positive pressure (Reg 76: 0=Off, 1=On)
     ghe:
       name: "GHE" # Ground heat exchanger / GWC (Reg 78: 0=Off, 1=Auto)
+    away:
+      name: "Away" # Away mode / Poza domem (Reg 98: 0=Off, 1=On)
+    holiday:
+      name: "Holiday" # Holiday / Vacation / Urlop mode (Reg 89: 0=Off, 1=On)
 ```
 
 ---
@@ -259,7 +263,9 @@ binary_sensor:
     config_airing:
       name: "Config Airing" # Active when Airing is enabled on the panel
     config_away:
-      name: "Config Away" # Active when Away mode is enabled on the panel
+      name: "Config Away" # Active when Away mode is enabled on the panel (Reg 98 / E4 21)
+    config_holiday:
+      name: "Config Holiday" # Active when Holiday mode is enabled on the panel (Reg 89)
     config_fireplace_mode:
       name: "Config Fireplace Mode" # Active when Fireplace mode is active in E3 44
 ```

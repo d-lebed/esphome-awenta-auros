@@ -21,4 +21,14 @@ class GheSwitch final : public switch_::Switch, public Parented<AwentaAurosCompo
   void write_state(bool state) override;
 };
 
+class AwaySwitch final : public switch_::Switch, public Parented<AwentaAurosComponent> {
+ protected:
+  void write_state(bool state) override;
+};
+
+class HolidaySwitch final : public switch_::Switch, public Parented<AwentaAurosComponent> {
+ protected:
+  void write_state(bool state) override;
+};
+
 }  // namespace esphome::awenta_auros

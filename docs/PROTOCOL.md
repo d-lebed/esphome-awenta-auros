@@ -83,7 +83,10 @@ During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.
      - Bits `0..1` (`0x03`): Thermostat mode (`0x00` = Schedule, `0x01` = Party, `0x02` = Manual).
      - Bits `3..4` (`0x18`): Season (`0x00` = Winter, `0x08` = Summer, `0x10` = Cooling).
      - Bit `5` (`0x20`): Airing active.
-   - `f[28]`: Active fan gear bits `0..2` (`1` = Stop, `3` = Gear 1, `5` = Gear 2, `7` = Gear 3).
+   - `f[28]`: Active fan gear & Holiday flag:
+     - Bits `1..2` (`(f[28] >> 1) & 0x03`): Active fan gear (`0` = Stop, `1` = Gear 1, `2` = Gear 2, `3` = Gear 3).
+     - Bit `0` (`0x01`): Normal/Away validity bit (`1` in Normal and Away modes, `0` when **Holiday / Vacation (`Urlop`)** mode is active, e.g. `0x04` instead of `0x05` on Gear 2; controlled via Register `89`).
+     - Bit `6` (`0x40`): Normal operating state (`1` in Normal mode, `0` when Away or Holiday program is active).
 
 2. **`E3 44` (`From: 41 -> To: 99`, command `'D'`) — Master Poll & Settings Push to AERO 4A2:**
    - Alternating 3-page configuration (`f[4] = 0x39`, `0x3A`, `0x3B`) containing fan speed percentages for Gears 1/2/3/Airing, heater PID parameters, and sensor thresholds.

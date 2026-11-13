@@ -86,6 +86,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_BINARY_SENSOR(schedule_mode)
   SUB_BINARY_SENSOR(config_airing)
   SUB_BINARY_SENSOR(config_away)
+  SUB_BINARY_SENSOR(config_holiday)
   SUB_BINARY_SENSOR(config_fireplace_mode)
 #endif
 
@@ -111,6 +112,8 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_SWITCH(airing)
   SUB_SWITCH(fireplace)
   SUB_SWITCH(ghe)
+  SUB_SWITCH(away)
+  SUB_SWITCH(holiday)
 #endif
 
 #ifdef USE_NUMBER
@@ -167,6 +170,8 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void set_desired_airing(bool enabled);
   void set_desired_fireplace(bool enabled);
   void set_desired_ghe(bool enabled);
+  void set_desired_away(bool enabled);
+  void set_desired_holiday(bool enabled);
   void set_desired_season_mode(int32_t season_mode);
   void set_desired_temperature(uint16_t reg_id, float temp_c);
   void set_desired_preheater_min_temperature(float temp_c);

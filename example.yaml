@@ -67,6 +67,10 @@ switch:
       name: "Fireplace"
     ghe:
       name: "GHE"
+    away:
+      name: "Away"
+    holiday:
+      name: "Holiday"
 
 number:
   - platform: awenta_auros
@@ -119,6 +123,8 @@ binary_sensor:
       name: "Config Airing"
     config_away:
       name: "Config Away"
+    config_holiday:
+      name: "Config Holiday"
     config_fireplace_mode:
       name: "Config Fireplace Mode"
 

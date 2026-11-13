@@ -13,6 +13,7 @@ CONF_BYPASS_POSITION = "bypass_position"
 CONF_SCHEDULE_MODE = "schedule_mode"
 CONF_CONFIG_AIRING = "config_airing"
 CONF_CONFIG_AWAY = "config_away"
+CONF_CONFIG_HOLIDAY = "config_holiday"
 CONF_CONFIG_FIREPLACE_MODE = "config_fireplace_mode"
 
 CONFIG_SCHEMA = cv.Schema(
@@ -37,6 +38,10 @@ CONFIG_SCHEMA = cv.Schema(
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
             icon="mdi:home-export-outline",
         ),
+        cv.Optional(CONF_CONFIG_HOLIDAY): binary_sensor.binary_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:beach",
+        ),
         cv.Optional(CONF_CONFIG_FIREPLACE_MODE): binary_sensor.binary_sensor_schema(
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
             icon="mdi:fireplace",
@@ -53,6 +58,7 @@ async def to_code(config: ConfigType) -> None:
         CONF_SCHEDULE_MODE,
         CONF_CONFIG_AIRING,
         CONF_CONFIG_AWAY,
+        CONF_CONFIG_HOLIDAY,
         CONF_CONFIG_FIREPLACE_MODE,
     ):
         if conf := config.get(key):

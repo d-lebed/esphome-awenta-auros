@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Away & Holiday Switches (`switch`) and Passive `config_holiday` Sensor (`binary_sensor`):**
+  - Added `away` (`Reg 98` / `__trybpozadomemznano1`) and `holiday` (`Reg 89` / `__urlop`) switches to control Away (*Poza domem*) and Holiday/Vacation (*Urlop*) modes from Home Assistant.
+  - Added `config_holiday` diagnostic binary sensor passively decoded from `E4 21` (`From: 41 -> To: 100`) byte `f[28]` bit `0` (`(f[28] & 0x01) == 0`).
+
+### Fixed
+- **Active Fan Gear Decoding in Holiday Mode:** Decoded active fan gear in `E4 21` (`f[28]`) as `(f[28] >> 1) & 0x03` so `active_fan_speed` continues to report the active gear (`0..3`) when bit `0` is cleared in Holiday mode (`0x04` on Gear 2).
+
 ---
 
 ## [1.1.0] - 2026-11-13

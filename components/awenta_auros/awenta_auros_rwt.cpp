@@ -86,6 +86,29 @@ void AwentaAurosComponent::update_register_current(uint16_t reg_id, int32_t curr
         this->ghe_switch_->publish_state(current_raw != 0);
       }
 #endif
+    } else if (reg_id == REG_HOLIDAY) {
+#ifdef USE_SWITCH
+      if (this->holiday_switch_ != nullptr) {
+        this->holiday_switch_->publish_state(current_raw != 0);
+      }
+#endif
+#ifdef USE_BINARY_SENSOR
+      if (this->config_holiday_binary_sensor_ != nullptr) {
+        this->config_holiday_binary_sensor_->publish_state(current_raw != 0);
+      }
+#endif
+    } else if (reg_id == REG_AWAY_MODE) {
+      this->is_away_active_ = (current_raw != 0);
+#ifdef USE_SWITCH
+      if (this->away_switch_ != nullptr) {
+        this->away_switch_->publish_state(this->is_away_active_);
+      }
+#endif
+#ifdef USE_BINARY_SENSOR
+      if (this->config_away_binary_sensor_ != nullptr) {
+        this->config_away_binary_sensor_->publish_state(this->is_away_active_);
+      }
+#endif
     } else if (reg_id == REG_BYPASS_MODE) {
 #ifdef USE_SELECT
       if (this->bypass_mode_select_ != nullptr) {
@@ -258,6 +281,30 @@ void AwentaAurosComponent::set_desired_fireplace(bool enabled) {
 
 void AwentaAurosComponent::set_desired_ghe(bool enabled) {
   this->set_desired_register(REG_GHE, enabled ? 1 : 0);
+}
+
+void AwentaAurosComponent::set_desired_away(bool enabled) {
+  this->set_desired_register(REG_AWAY_MODE, enabled ? 1 : 0);
+  if (enabled) {
+    this->set_desired_register(REG_HOLIDAY, 0);
+#ifdef USE_SWITCH
+    if (this->holiday_switch_ != nullptr) {
+      this->holiday_switch_->publish_state(false);
+    }
+#endif
+  }
+}
+
+void AwentaAurosComponent::set_desired_holiday(bool enabled) {
+  this->set_desired_register(REG_HOLIDAY, enabled ? 1 : 0);
+  if (enabled) {
+    this->set_desired_register(REG_AWAY_MODE, 0);
+#ifdef USE_SWITCH
+    if (this->away_switch_ != nullptr) {
+      this->away_switch_->publish_state(false);
+    }
+#endif
+  }
 }
 
 void AwentaAurosComponent::set_desired_bypass_mode(const std::string &option) {

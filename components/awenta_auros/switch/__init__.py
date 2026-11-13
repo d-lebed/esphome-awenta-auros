@@ -11,10 +11,14 @@ DEPENDENCIES = ["awenta_auros"]
 AiringSwitch = awenta_auros_ns.class_("AiringSwitch", switch.Switch)
 FireplaceSwitch = awenta_auros_ns.class_("FireplaceSwitch", switch.Switch)
 GheSwitch = awenta_auros_ns.class_("GheSwitch", switch.Switch)
+AwaySwitch = awenta_auros_ns.class_("AwaySwitch", switch.Switch)
+HolidaySwitch = awenta_auros_ns.class_("HolidaySwitch", switch.Switch)
 
 CONF_AIRING = "airing"
 CONF_FIREPLACE = "fireplace"
 CONF_GHE = "ghe"
+CONF_AWAY = "away"
+CONF_HOLIDAY = "holiday"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -35,6 +39,16 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_SWITCH,
             icon="mdi:tunnel-outline",
         ),
+        cv.Optional(CONF_AWAY): switch.switch_schema(
+            AwaySwitch,
+            device_class=DEVICE_CLASS_SWITCH,
+            icon="mdi:home-export-outline",
+        ),
+        cv.Optional(CONF_HOLIDAY): switch.switch_schema(
+            HolidaySwitch,
+            device_class=DEVICE_CLASS_SWITCH,
+            icon="mdi:beach",
+        ),
     }
 )
 
@@ -53,3 +67,11 @@ async def to_code(config: ConfigType) -> None:
         sw = await switch.new_switch(conf)
         await cg.register_parented(sw, hub)
         cg.add(hub.set_ghe_switch(sw))
+    if conf := config.get(CONF_AWAY):
+        sw = await switch.new_switch(conf)
+        await cg.register_parented(sw, hub)
+        cg.add(hub.set_away_switch(sw))
+    if conf := config.get(CONF_HOLIDAY):
+        sw = await switch.new_switch(conf)
+        await cg.register_parented(sw, hub)
+        cg.add(hub.set_holiday_switch(sw))

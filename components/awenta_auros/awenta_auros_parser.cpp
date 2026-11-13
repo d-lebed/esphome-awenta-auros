@@ -27,12 +27,20 @@ void AwentaAurosComponent::handle_master_status_(const std::vector<uint8_t> &rx_
 
   bool schedule_active = (mode & 0x10) != 0;
   this->is_away_active_ = (mode & 0x04) != 0;
+  bool holiday_active = (rx_buffer[28] & 0x01) == 0;
+
+  this->update_register_current(REG_AWAY_MODE, this->is_away_active_ ? 1 : 0);
+  this->update_register_current(REG_HOLIDAY, holiday_active ? 1 : 0);
+
 #ifdef USE_BINARY_SENSOR
   if (this->schedule_mode_binary_sensor_ != nullptr) {
     this->schedule_mode_binary_sensor_->publish_state(schedule_active);
   }
   if (this->config_away_binary_sensor_ != nullptr) {
     this->config_away_binary_sensor_->publish_state(this->is_away_active_);
+  }
+  if (this->config_holiday_binary_sensor_ != nullptr) {
+    this->config_holiday_binary_sensor_->publish_state(holiday_active);
   }
 #endif
 
@@ -116,8 +124,7 @@ void AwentaAurosComponent::handle_master_status_(const std::vector<uint8_t> &rx_
   }
 #endif
 
-  uint8_t raw_fs = rx_buffer[28] & 0x07;
-  uint8_t active_gear = (raw_fs == 3) ? 1 : ((raw_fs == 5) ? 2 : ((raw_fs == 7) ? 3 : 0));
+  uint8_t active_gear = (rx_buffer[28] >> 1) & 0x03;
   this->last_bus_active_gear_ = active_gear;
   this->update_smooth_fan_speed_from_bus_();
 #ifdef USE_AWENTA_AUROS_FAN
@@ -127,18 +134,7 @@ void AwentaAurosComponent::handle_master_status_(const std::vector<uint8_t> &rx_
 #endif
 #ifdef USE_TEXT_SENSOR
   if (this->active_fan_speed_text_sensor_ != nullptr) {
-    std::string fs_str;
-    if (raw_fs == 1)
-      fs_str = "0";
-    else if (raw_fs == 3)
-      fs_str = "1";
-    else if (raw_fs == 5)
-      fs_str = "2";
-    else if (raw_fs == 7)
-      fs_str = "3";
-    else
-      fs_str = "Unexpected (" + std::to_string(raw_fs) + ")";
-    this->active_fan_speed_text_sensor_->publish_state(fs_str);
+    this->active_fan_speed_text_sensor_->publish_state(std::to_string(active_gear));
   }
 #endif
 
@@ -162,7 +158,7 @@ void AwentaAurosComponent::handle_master_status_(const std::vector<uint8_t> &rx_
       }
     }
 
-    if (raw_fs <= 1) {
+    if (active_gear == 0) {
       this->climate_->action = climate::CLIMATE_ACTION_IDLE;
     } else if (season_idx == 0) {
       this->climate_->action =
