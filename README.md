@@ -356,6 +356,7 @@ text_sensor:
 
 - [Compit C14 Protocol & iNext Slot Architecture](./docs/PROTOCOL.md)
 - [NANO COLOR 2 + AERO 4A2 Complete Register Map](./docs/REGISTERS.md)
+- [Changelog](./CHANGELOG.md)
 
 ---
 
