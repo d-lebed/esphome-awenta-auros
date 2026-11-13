@@ -28,12 +28,6 @@
 #ifdef USE_NUMBER
 #include "esphome/components/number/number.h"
 #endif
-#ifdef USE_CLIMATE
-#include "esphome/components/climate/climate.h"
-#endif
-#ifdef USE_FAN
-#include "esphome/components/fan/fan.h"
-#endif
 
 #include <array>
 #include <cmath>
@@ -41,54 +35,11 @@
 #include <string>
 #include <vector>
 
+#include "c14_protocol.h"
+#include "awenta_auros_climate.h"
+#include "awenta_auros_fan.h"
+
 namespace esphome::awenta_auros {
-
-class AwentaAurosComponent;
-
-#ifdef USE_CLIMATE
-class AwentaAurosClimate : public climate::Climate, public Component {
- public:
-  AwentaAurosClimate();
-
-  void set_parent(AwentaAurosComponent *parent) { this->parent_ = parent; }
-
-  void apply_bus_fan_mode(int32_t fs);
-  void apply_bus_preset(int32_t therm);
-
- protected:
-  climate::ClimateTraits traits() override;
-  void control(const climate::ClimateCall &call) override;
-
-  AwentaAurosComponent *parent_{nullptr};
-};
-#endif
-
-#ifdef USE_FAN
-class AwentaAurosFan : public fan::Fan, public Component {
- public:
-  AwentaAurosFan();
-
-  void set_parent(AwentaAurosComponent *parent) { this->parent_ = parent; }
-  void enable_smooth_speed_mode(uint8_t s1_def, uint8_t s2_def, uint8_t s3_def);
-
-  fan::FanTraits get_traits() override;
-  void apply_bus_fan_mode(int32_t fs);
-  void apply_bus_active_gear(uint8_t active_gear);
-  void apply_smooth_speed_state(int32_t percent, int32_t fan_mode, bool airing);
-
- protected:
-  void control(const fan::FanCall &call) override;
-
-  AwentaAurosComponent *parent_{nullptr};
-  fan::FanTraits traits_{false, true, false, 3};
-  bool smooth_mode_{false};
-  uint8_t s1_default_{30};
-  uint8_t s2_default_{60};
-  uint8_t s3_default_{90};
-  uint8_t last_active_gear_{1};
-  int32_t last_smooth_speed_{60};
-};
-#endif
 
 class AwentaAurosComponent : public Component, public uart::UARTDevice {
 #ifdef USE_SENSOR
@@ -177,38 +128,6 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
 #endif
 
  public:
-  static constexpr uint8_t ADDR_MASTER = 41;
-  static constexpr uint8_t ADDR_NANO_2 = 42;
-  static constexpr uint8_t ADDR_AERO = 99;
-  static constexpr uint8_t ADDR_BROADCAST_PRIMARY = 100;
-  static constexpr uint8_t ADDR_BROADCAST_SECONDARY = 101;
-  static constexpr uint8_t ADDR_LAN = 111;
-  static constexpr uint8_t ADDR_INEXT = 112;
-  static constexpr uint8_t ADDR_PC = 113;
-
-  // NANO COLOR 2 C14 register indices (R/W)
-  static constexpr uint16_t REG_COMFORT_TEMP = 3;
-  static constexpr uint16_t REG_ECO_WINTER_TEMP = 4;
-  static constexpr uint16_t REG_ECO_COOLING_TEMP = 5;
-  static constexpr uint16_t REG_MANUAL_TEMP = 6;
-  static constexpr uint16_t REG_AWAY_TEMP = 7;
-  static constexpr uint16_t REG_SEASON_MODE = 64;
-  static constexpr uint16_t REG_FIREPLACE = 76;
-  static constexpr uint16_t REG_GHE = 78;
-  static constexpr uint16_t REG_BYPASS_MODE = 79;
-  static constexpr uint16_t REG_FAN_MODE = 80;
-  static constexpr uint16_t REG_AIRING = 81;
-  static constexpr uint16_t REG_THERMOSTAT_MODE = 88;
-  static constexpr uint16_t REG_SUPPLY_FAN_SPEED_1 = 141;
-  static constexpr uint16_t REG_SUPPLY_FAN_SPEED_2 = 142;
-  static constexpr uint16_t REG_SUPPLY_FAN_SPEED_3 = 143;
-  static constexpr uint16_t REG_SUPPLY_FAN_AIRING_SPEED = 144;
-  static constexpr uint16_t REG_EXHAUST_FAN_SPEED_1 = 145;
-  static constexpr uint16_t REG_EXHAUST_FAN_SPEED_2 = 146;
-  static constexpr uint16_t REG_EXHAUST_FAN_SPEED_3 = 147;
-  static constexpr uint16_t REG_EXHAUST_FAN_AIRING_SPEED = 148;
-  static constexpr uint16_t REG_PREHEATER_MIN_TEMP = 161;
-
   struct ManagedRegister {
     int32_t current_raw{0};
     bool has_current{false};
@@ -225,32 +144,11 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void set_time(time::RealTimeClock *time) { this->time_ = time; }
 #endif
 #ifdef USE_CLIMATE
-  void set_climate(AwentaAurosClimate *clim) {
-    this->climate_ = clim;
-    if (clim != nullptr) {
-      clim->set_parent(this);
-    }
-  }
+  void set_climate(AwentaAurosClimate *clim);
 #endif
 #ifdef USE_FAN
-  void set_fan(AwentaAurosFan *f) {
-    this->fan_ = f;
-    if (f != nullptr) {
-      f->set_parent(this);
-      if (this->sfs_enabled_) {
-        f->enable_smooth_speed_mode(this->sfs_speed_1_default_, this->sfs_speed_2_default_,
-                                    this->sfs_speed_3_default_);
-      }
-    }
-  }
+  void set_fan(AwentaAurosFan *f);
 #endif
-
-  static std::string fan_mode_to_string(int32_t mode);
-  static int32_t fan_mode_from_string(const std::string &option);
-  static std::string thermostat_mode_to_string(int32_t mode);
-  static int32_t thermostat_mode_from_string(const std::string &option);
-  static std::string bypass_mode_to_string(int32_t mode);
-  static int32_t bypass_mode_from_string(const std::string &option);
 
   void set_desired_register(uint16_t reg_id, int32_t desired_raw);
   void update_register_current(uint16_t reg_id, int32_t current_raw);
@@ -278,12 +176,6 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void reset_sfs_fan_speeds_to_defaults();
 
  protected:
-  static float decode_value_(uint8_t h, uint8_t l);
-  static void encode_value_(float value, uint8_t &h, uint8_t &l);
-  static uint16_t decode_index_(uint8_t h, uint8_t l);
-  static void encode_index_(uint16_t index, uint8_t &h, uint8_t &l);
-  static uint8_t calculate_c14_checksum_(const std::vector<uint8_t> &frame);
-
   void parse_frame_();
   void print_header_(uint8_t command, uint8_t source_address, uint8_t target_address,
                      uint8_t checksum, const std::string &hex_str);
@@ -345,177 +237,6 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   uint8_t current_minute_{0};
 };
 
-#ifdef USE_SELECT
-class FanModeSelect final : public select::Select, public Parented<AwentaAurosComponent> {
- protected:
-  void control(size_t index) override {
-    this->publish_state(index);
-    this->parent_->set_desired_fan_mode_index(index);
-  }
-};
-
-class ThermostatModeSelect final : public select::Select, public Parented<AwentaAurosComponent> {
- protected:
-  void control(size_t index) override {
-    this->publish_state(index);
-    this->parent_->set_desired_thermostat_mode_index(index);
-  }
-};
-
-class BypassModeSelect final : public select::Select, public Parented<AwentaAurosComponent> {
- protected:
-  void control(size_t index) override {
-    this->publish_state(index);
-    this->parent_->set_desired_bypass_mode_index(index);
-  }
-};
-#endif
-
-#ifdef USE_SWITCH
-class AiringSwitch final : public switch_::Switch, public Parented<AwentaAurosComponent> {
- protected:
-  void write_state(bool state) override {
-    this->publish_state(state);
-    this->parent_->set_desired_airing(state);
-  }
-};
-
-class FireplaceSwitch final : public switch_::Switch, public Parented<AwentaAurosComponent> {
- protected:
-  void write_state(bool state) override {
-    this->publish_state(state);
-    this->parent_->set_desired_fireplace(state);
-  }
-};
-
-class GheSwitch final : public switch_::Switch, public Parented<AwentaAurosComponent> {
- protected:
-  void write_state(bool state) override {
-    this->publish_state(state);
-    this->parent_->set_desired_ghe(state);
-  }
-};
-#endif
-
-#ifdef USE_NUMBER
-class ComfortTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_temperature(AwentaAurosComponent::REG_COMFORT_TEMP, value);
-  }
-};
-
-class EcoWinterTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_temperature(AwentaAurosComponent::REG_ECO_WINTER_TEMP, value);
-  }
-};
-
-class EcoCoolingTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_temperature(AwentaAurosComponent::REG_ECO_COOLING_TEMP, value);
-  }
-};
-
-class ManualTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_temperature(AwentaAurosComponent::REG_MANUAL_TEMP, value);
-  }
-};
-
-class AwayTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_temperature(AwentaAurosComponent::REG_AWAY_TEMP, value);
-  }
-};
-
-class PreheaterMinTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_preheater_min_temperature(value);
-  }
-};
-
-class SupplyFanSpeed1Number final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_SUPPLY_FAN_SPEED_1, value);
-  }
-};
-
-class SupplyFanSpeed2Number final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_SUPPLY_FAN_SPEED_2, value);
-  }
-};
-
-class SupplyFanSpeed3Number final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_SUPPLY_FAN_SPEED_3, value);
-  }
-};
-
-class SupplyFanAiringSpeedNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_SUPPLY_FAN_AIRING_SPEED, value);
-  }
-};
-
-class ExhaustFanSpeed1Number final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_EXHAUST_FAN_SPEED_1, value);
-  }
-};
-
-class ExhaustFanSpeed2Number final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_EXHAUST_FAN_SPEED_2, value);
-  }
-};
-
-class ExhaustFanSpeed3Number final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_EXHAUST_FAN_SPEED_3, value);
-  }
-};
-
-class ExhaustFanAiringSpeedNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->publish_state(value);
-    this->parent_->set_desired_fan_speed_percent(AwentaAurosComponent::REG_EXHAUST_FAN_AIRING_SPEED, value);
-  }
-};
-
-class SmoothFanSpeedNumber final : public number::Number, public Parented<AwentaAurosComponent> {
- protected:
-  void control(float value) override {
-    this->parent_->set_desired_smooth_fan_speed(value);
-  }
-};
-#endif
-
 }  // namespace esphome::awenta_auros
+
+#include "awenta_auros_entities.h"
