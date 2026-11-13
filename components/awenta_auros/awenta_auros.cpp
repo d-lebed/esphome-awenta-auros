@@ -1624,6 +1624,8 @@ namespace esphome::awenta_auros
   {
     std::array<uint16_t, 6> regs = {0, 0, 0, 0, 0, 0};
     std::array<uint16_t, 6> d_raw_values = {2000, 2000, 2000, 2000, 2000, 2000};
+    this->last_tx_regs_.fill(0);
+    this->last_tx_raw_values_.fill(0);
     int slot = 0;
     std::string label = "W:";
 
@@ -1636,6 +1638,8 @@ namespace esphome::awenta_auros
       if (reg.has_desired && (!reg.has_current || reg.desired_raw != reg.current_raw))
       {
         regs[slot] = reg_id;
+        this->last_tx_regs_[slot] = reg_id;
+        this->last_tx_raw_values_[slot] = reg.desired_raw;
         int32_t encoded_val = reg.desired_raw + 2000;
         if (encoded_val < 0)
           encoded_val = 0;
@@ -1660,9 +1664,20 @@ namespace esphome::awenta_auros
     std::string slots_summary;
     if (command == 'w')
     {
+      uint8_t ack_mask = this->rx_buffer_[5];
       char sbuf[48];
-      snprintf(sbuf, sizeof(sbuf), "ACK mask=0x%02X ", this->rx_buffer_[5]);
+      snprintf(sbuf, sizeof(sbuf), "ACK mask=0x%02X ", ack_mask);
       slots_summary = sbuf;
+
+      for (int i = 0; i < 6; i++)
+      {
+        uint16_t reg_id = this->last_tx_regs_[i];
+        if (reg_id != 0 && ((ack_mask & (1 << i)) != 0))
+        {
+          this->update_register_current(reg_id, this->last_tx_raw_values_[i]);
+        }
+      }
+      this->last_tx_regs_.fill(0);
     }
 
     for (int i = 0; i < 6; i++)
@@ -1691,6 +1706,19 @@ namespace esphome::awenta_auros
              command, source_address, target_address, slots_summary.c_str(), hex_str.c_str());
 
     ESP_LOGW(TAG_RWT, "<<< RWT RESPONSE RECEIVED! %s", full_buf);
+
+    if (command == 'w' && this->has_pending_writes() && !this->tx_scheduled_)
+    {
+      uint32_t elapsed_ms = millis() - this->inext_window_start_ms_;
+      if (elapsed_ms < 500)
+      {
+        this->tx_scheduled_ = true;
+        this->scheduled_tx_time_ms_ = millis() + 40;
+        ESP_LOGW(TAG_RWT,
+                 "More pending registers remain (%ums into iNext window), scheduling 2nd 'W' packet in 40ms",
+                 (unsigned)elapsed_ms);
+      }
+    }
   }
 
   void AwentaAurosComponent::parse_frame_()
@@ -1837,8 +1865,9 @@ namespace esphome::awenta_auros
     if (command == 'D' && source_address == ADDR_MASTER && target_address == ADDR_INEXT &&
         this->has_pending_writes())
     {
+      this->inext_window_start_ms_ = millis();
       this->tx_scheduled_ = true;
-      this->scheduled_tx_time_ms_ = millis() + 40;
+      this->scheduled_tx_time_ms_ = this->inext_window_start_ms_ + 40;
       ESP_LOGW(TAG_RWT,
                "Detected iNext slot (F0 44 from Master 41 -> 112), scheduling pending register write in 40ms");
     }
