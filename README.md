@@ -144,7 +144,7 @@ climate:
 
 ### 3. Fan (`fan`)
 
-Provides a dedicated 3-speed fan entity with `Auto` (Schedule) and `Party` preset modes — ideal for **Apple HomeKit** (`Fanv2` service with discrete speeds `33% / 66% / 100%` and `Auto` / `Manual` toggle):
+Provides a dedicated fan entity with `Speed 1`, `Speed 2`, `Speed 3`, `Airing`, `Auto` (Schedule), and `Party` preset modes. When `smooth_fan_speed` is configured, the fan entity automatically exposes a smooth `0..100 %` (`1 %` step) slider alongside the preset buttons:
 
 ```yaml
 fan:
