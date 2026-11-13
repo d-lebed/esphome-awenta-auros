@@ -8,10 +8,10 @@ An ESPHome external component for **Awenta Pro Auros** heat-recovery ventilation
   Unlike approaches that disconnect the display panel or downgrade it to Slave mode, `awenta_auros` keeps your original **NANO COLOR 2** panel as the **Master** (`Address 41`) and communicates with it using the official **Compit iNext (`Address 112`)** time slot (`F0 44`).
 - **Silent State-Diff Synchronization (`desired != current`):**
   The ESP32 listens passively to the C14 bus at all times. It only transmits a `'W'` write packet inside the ~880 ms silence window after `F0 44` when a setting changed in Home Assistant differs from the current state reported by the panel. Up to 6 changed registers are batched into a single frame with automatic retry until confirmed.
-- **Native Home Assistant `climate` Entity:**
-  Exposes a full thermostat card with room temperature, room humidity, target temperature slider, season modes (`Heat` / `Fan only` / `Cool`), fan modes (`Off` / `Low` / `Medium` / `High` / `Diffuse` / `Auto`), and presets (`Eco` / `Boost` / `Home`).
+- **Native Home Assistant `climate` & Smooth `0..100 %` `fan` Entities:**
+  Exposes a full thermostat card with room temperature, room humidity, target temperature slider, season modes (`Heat` / `Fan only` / `Cool`), fan modes (`Off` / `Low` / `Medium` / `High` / `Diffuse` / `Auto`), and presets (`Eco` / `Boost` / `Home`), plus an optional **Smooth Fan Speed (`0..100 %`, `1 %` step)** mode that dynamically adjusts Gears 1–3 and Airing across 3 equal zones.
 - **Complete Sensor & Control Suite:**
-  Dedicated `climate`, `fan`, `select`, `switch`, `number`, `sensor`, `binary_sensor`, and `text_sensor` platforms for every recuperator parameter (including Airing, Fireplace mode, GHE pre-heater, Bypass mode, and all 5 temperature setpoints).
+  Dedicated `climate`, `fan`, `select`, `switch`, `number`, `sensor`, `binary_sensor`, and `text_sensor` platforms for every recuperator parameter (including Airing, Fireplace mode, GHE ground heat exchanger, Bypass mode, all temperature setpoints, fan speed gear setpoints, and heat-recovery efficiency sensors).
 
 ---
 
@@ -228,6 +228,20 @@ number:
       sfs_speed_2_default: 60 # Optional (default: 60)
       sfs_speed_3_default: 90 # Optional (default: 90)
 ```
+
+#### How `smooth_fan_speed` Works (Optional)
+
+When `smooth_fan_speed` is configured under `number:`, you get seamless `0..100 %` (`1 %` step) fan speed control on both the `smooth_fan_speed` number entity and the `fan` entity (`Recuperator Fan`):
+
+- **`0 %`:** Turns ventilation **Off** (`Fan Mode = Off`, `Airing = Off`) and resets Speed 1–3 setpoints to `sfs_speed_1..3_default`.
+- **`sfs_min_speed .. sfs_max_speed` (default `1 .. 99 %`):** Divides the range into **3 equal zones** corresponding to **Speed 1**, **Speed 2**, and **Speed 3** (with defaults `1..99 %`: Zone 1 = `1..33 %`, Zone 2 = `34..66 %`, Zone 3 = `67..99 %`):
+  - Sets both Supply and Exhaust fan speed for the selected gear to the target percentage,
+  - Resets the other two gears back to their defaults (`sfs_speed_1..3_default`),
+  - Disables `Airing` and switches the active gear to `Speed 1`, `Speed 2`, or `Speed 3`.
+- **`100 %`:** Activates **Airing** (`Reg 81 = 1`) and resets all three gear speeds (`Speed 1..3`) to their defaults.
+- **Manual Gear / Preset Selection:** Whenever you manually select `Speed 1`, `Speed 2`, `Speed 3`, `Auto`, or `Party` via the `Fan Mode` dropdown (`select`), `Recuperator Fan` presets (`fan`), or `Recuperator` (`climate`), all three gear speeds automatically reset to `sfs_speed_1..3_default`.
+- **Compile-Time Validation:** ESPHome validates at build time that `sfs_min_speed < sfs_max_speed`, `sfs_speed_1_default < sfs_speed_2_default < sfs_speed_3_default`, and all defaults lie within `[sfs_min_speed .. sfs_max_speed]`.
+- If `smooth_fan_speed` is omitted from your YAML configuration, the feature is completely disabled and the `fan` entity operates as a standard 3-speed fan.
 
 ---
 

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.1.0] - 2026-11-13
+
 ### Added
 - **Smooth Fan Speed (`smooth_fan_speed` in `number`):** Optional `0..100 %` (`1 %` step) slider that divides `[sfs_min_speed .. sfs_max_speed]` into 3 equal gear zones (`Speed 1`, `Speed 2`, `Speed 3`), sets the active gear's supply/exhaust fan speed to the selected percentage while resetting the other two gears to `sfs_speed_1..3_default` (`30 / 60 / 90 %`), turns ventilation `Off` at `0 %`, and activates `Airing` at `100 %`. Includes compile-time YAML schema validation (`sfs_min_speed < sfs_max_speed` and strictly ascending defaults within bounds).
 - **Smooth `0..100 %` `fan` Entity Mode & Extended Presets:** When `smooth_fan_speed` is configured, the `fan` platform automatically upgrades from 3 discrete speeds to a smooth `0..100 %` (`speed_count = 100`) slider alongside `Speed 1`, `Speed 2`, `Speed 3`, `Airing`, `Auto`, and `Party` preset buttons (while preserving the original 3-speed `Auto` / `Party` behavior when `smooth_fan_speed` is omitted).
@@ -68,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `sensor`, `binary_sensor`, and `text_sensor` for temperatures, humidity, fan speeds, setpoints, and operating states
   - Protocol and register documentation in `docs/PROTOCOL.md` and `docs/REGISTERS.md` (including NANO COLOR 2 v6.02 `+1` register shift on `160..201`).
 
-[Unreleased]: https://github.com/d-lebed/esphome-awenta-auros/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/d-lebed/esphome-awenta-auros/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/d-lebed/esphome-awenta-auros/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/d-lebed/esphome-awenta-auros/compare/v0.5.0...v1.0.0
 [0.5.0]: https://github.com/d-lebed/esphome-awenta-auros/releases/tag/v0.5.0
