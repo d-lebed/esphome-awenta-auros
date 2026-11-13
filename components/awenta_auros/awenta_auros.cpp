@@ -177,7 +177,7 @@ namespace esphome::awenta_auros
 #ifdef USE_FAN
   AwentaAurosFan::AwentaAurosFan()
   {
-    this->set_supported_preset_modes({"Speed 1", "Speed 2", "Speed 3", "Airing", "Auto", "Party"});
+    this->set_supported_preset_modes({"Auto", "Party"});
   }
 
   void AwentaAurosFan::enable_smooth_speed_mode(uint8_t s1_def, uint8_t s2_def, uint8_t s3_def)
@@ -187,6 +187,7 @@ namespace esphome::awenta_auros
     this->s2_default_ = s2_def;
     this->s3_default_ = s3_def;
     this->traits_ = fan::FanTraits(false, true, false, 100);
+    this->set_supported_preset_modes({"Speed 1", "Speed 2", "Speed 3", "Airing", "Auto", "Party"});
   }
 
   fan::FanTraits AwentaAurosFan::get_traits()
@@ -240,17 +241,17 @@ namespace esphome::awenta_auros
     case 1: // Speed 1
       this->state = true;
       this->speed = 1;
-      this->set_preset_mode_("Speed 1");
+      this->clear_preset_mode_();
       break;
     case 2: // Speed 2
       this->state = true;
       this->speed = 2;
-      this->set_preset_mode_("Speed 2");
+      this->clear_preset_mode_();
       break;
     case 3: // Speed 3
       this->state = true;
       this->speed = 3;
-      this->set_preset_mode_("Speed 3");
+      this->clear_preset_mode_();
       break;
     case 4: // Party
       this->state = true;
@@ -452,7 +453,7 @@ namespace esphome::awenta_auros
           spd = 3;
         this->state = true;
         this->speed = spd;
-        this->set_preset_mode_(spd == 1 ? "Speed 1" : (spd == 2 ? "Speed 2" : "Speed 3"));
+        this->clear_preset_mode_();
         if (this->parent_ != nullptr)
         {
           this->parent_->set_desired_fan_mode_index((size_t)spd);
