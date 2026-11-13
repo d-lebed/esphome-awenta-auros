@@ -99,6 +99,8 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_SENSOR(supply_fan_speed)
   SUB_SENSOR(extract_fan_speed)
   SUB_SENSOR(exhaust_fan_speed)
+  SUB_SENSOR(supply_efficiency)
+  SUB_SENSOR(exhaust_efficiency)
   SUB_SENSOR(config_intake_temperature)
   SUB_SENSOR(config_comfort_temperature)
   SUB_SENSOR(config_eco_winter_temperature)
@@ -289,9 +291,17 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void execute_scheduled_write_();
   void publish_fan_speed_numbers_(int32_t s1, int32_t s2, int32_t s3);
   void update_smooth_fan_speed_from_bus_();
+  void publish_efficiency_sensors_();
 
   std::vector<uint8_t> rx_buffer_;
   std::map<uint16_t, ManagedRegister> managed_registers_;
+
+  bool has_primary_temps_{false};
+  bool has_secondary_temps_{false};
+  float last_preheater_temp_{0.0f};
+  float last_supply_temp_{0.0f};
+  float last_extract_temp_{0.0f};
+  float last_exhaust_temp_{0.0f};
 
   bool sfs_enabled_{false};
   uint8_t sfs_min_speed_{1};

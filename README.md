@@ -287,6 +287,10 @@ sensor:
       name: "Extract Fan Speed"
     exhaust_fan_speed:
       name: "Exhaust Fan Speed"
+    supply_efficiency:
+      name: "Supply Efficiency" # Heat recovery efficiency on supply side (%)
+    exhaust_efficiency:
+      name: "Exhaust Efficiency" # Heat recovery efficiency on exhaust side (%)
     config_intake_temperature:
       name: "Config Current Intake Temperature"
     config_comfort_temperature:

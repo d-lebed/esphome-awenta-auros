@@ -1117,6 +1117,46 @@ namespace esphome::awenta_auros
 #endif
   }
 
+  void AwentaAurosComponent::publish_efficiency_sensors_()
+  {
+#ifdef USE_SENSOR
+    if (!this->has_primary_temps_ || !this->has_secondary_temps_)
+      return;
+    if (this->supply_efficiency_sensor_ == nullptr && this->exhaust_efficiency_sensor_ == nullptr)
+      return;
+
+    float delta_max = this->last_extract_temp_ - this->last_preheater_temp_;
+    if (std::fabs(delta_max) < 1.0f)
+    {
+      if (this->supply_efficiency_sensor_ != nullptr)
+        this->supply_efficiency_sensor_->publish_state(NAN);
+      if (this->exhaust_efficiency_sensor_ != nullptr)
+        this->exhaust_efficiency_sensor_->publish_state(NAN);
+      return;
+    }
+
+    if (this->supply_efficiency_sensor_ != nullptr)
+    {
+      float supply_eff = ((this->last_supply_temp_ - this->last_preheater_temp_) / delta_max) * 100.0f;
+      if (supply_eff < 0.0f)
+        supply_eff = 0.0f;
+      if (supply_eff > 100.0f)
+        supply_eff = 100.0f;
+      this->supply_efficiency_sensor_->publish_state(supply_eff);
+    }
+
+    if (this->exhaust_efficiency_sensor_ != nullptr)
+    {
+      float exhaust_eff = ((this->last_extract_temp_ - this->last_exhaust_temp_) / delta_max) * 100.0f;
+      if (exhaust_eff < 0.0f)
+        exhaust_eff = 0.0f;
+      if (exhaust_eff > 100.0f)
+        exhaust_eff = 100.0f;
+      this->exhaust_efficiency_sensor_->publish_state(exhaust_eff);
+    }
+#endif
+  }
+
   void AwentaAurosComponent::set_climate_target_temperature(float temp_c)
   {
     this->set_desired_temperature(REG_MANUAL_TEMP, temp_c);
@@ -1473,6 +1513,11 @@ namespace esphome::awenta_auros
     float preheater_temp = decode_value_(rx_buffer[14], rx_buffer[15]);
     float supply_target_temp = decode_value_(rx_buffer[18], rx_buffer[19]);
 
+    this->last_preheater_temp_ = preheater_temp;
+    this->last_supply_temp_ = supply_temp;
+    this->has_primary_temps_ = true;
+    this->publish_efficiency_sensors_();
+
     uint8_t target_fan_speed = rx_buffer[22];
     uint8_t intake_fan_speed = rx_buffer[25];
     uint8_t supply_fan_speed = rx_buffer[26];
@@ -1514,6 +1559,11 @@ namespace esphome::awenta_auros
     float extract_temp = decode_value_(rx_buffer[18], rx_buffer[19]);
     uint8_t extract_fan_speed = rx_buffer[14];
     uint8_t exhaust_fan_speed = rx_buffer[15];
+
+    this->last_exhaust_temp_ = exhaust_temp;
+    this->last_extract_temp_ = extract_temp;
+    this->has_secondary_temps_ = true;
+    this->publish_efficiency_sensors_();
 
 #ifdef USE_SENSOR
     if (this->exhaust_temperature_sensor_ != nullptr)

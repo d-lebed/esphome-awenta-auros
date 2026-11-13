@@ -31,6 +31,8 @@ CONF_INTAKE_FAN_SPEED = "intake_fan_speed"
 CONF_SUPPLY_FAN_SPEED = "supply_fan_speed"
 CONF_EXTRACT_FAN_SPEED = "extract_fan_speed"
 CONF_EXHAUST_FAN_SPEED = "exhaust_fan_speed"
+CONF_SUPPLY_EFFICIENCY = "supply_efficiency"
+CONF_EXHAUST_EFFICIENCY = "exhaust_efficiency"
 
 CONF_CONFIG_INTAKE_TEMPERATURE = "config_intake_temperature"
 CONF_CONFIG_COMFORT_TEMPERATURE = "config_comfort_temperature"
@@ -91,6 +93,15 @@ def _diagnostic_speed_schema(icon: str) -> cv.Schema:
     )
 
 
+def _efficiency_schema(icon: str) -> cv.Schema:
+    return sensor.sensor_schema(
+        unit_of_measurement=UNIT_PERCENT,
+        accuracy_decimals=1,
+        state_class=STATE_CLASS_MEASUREMENT,
+        icon=icon,
+    )
+
+
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(CONF_ID): cv.declare_id(cg.EntityBase),
@@ -115,6 +126,8 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_SUPPLY_FAN_SPEED): _speed_schema("mdi:fan-chevron-down"),
         cv.Optional(CONF_EXTRACT_FAN_SPEED): _speed_schema("mdi:fan-chevron-up"),
         cv.Optional(CONF_EXHAUST_FAN_SPEED): _speed_schema("mdi:fan-chevron-up"),
+        cv.Optional(CONF_SUPPLY_EFFICIENCY): _efficiency_schema("mdi:gauge"),
+        cv.Optional(CONF_EXHAUST_EFFICIENCY): _efficiency_schema("mdi:gauge"),
         cv.Optional(CONF_CONFIG_INTAKE_TEMPERATURE): _diagnostic_temp_schema(
             "mdi:home-import-outline"
         ),
@@ -165,6 +178,8 @@ async def to_code(config: ConfigType) -> None:
         CONF_SUPPLY_FAN_SPEED,
         CONF_EXTRACT_FAN_SPEED,
         CONF_EXHAUST_FAN_SPEED,
+        CONF_SUPPLY_EFFICIENCY,
+        CONF_EXHAUST_EFFICIENCY,
         CONF_CONFIG_INTAKE_TEMPERATURE,
         CONF_CONFIG_COMFORT_TEMPERATURE,
         CONF_CONFIG_ECO_WINTER_TEMPERATURE,
