@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.2.0] - 2026-11-15
+
 ### Added
 - **Defrost / Thawing Configuration & Diagnostic Entities (`number`, `select`, `sensor`, `text_sensor`):**
   - Added configuration controls (`entity_category: config`):
@@ -96,7 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `sensor`, `binary_sensor`, and `text_sensor` for temperatures, humidity, fan speeds, setpoints, and operating states
   - Protocol and register documentation in `docs/PROTOCOL.md` and `docs/REGISTERS.md` (including NANO COLOR 2 v6.02 `+1` register shift on `160..201`).
 
-[Unreleased]: https://github.com/d-lebed/esphome-awenta-auros/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/d-lebed/esphome-awenta-auros/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/d-lebed/esphome-awenta-auros/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/d-lebed/esphome-awenta-auros/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/d-lebed/esphome-awenta-auros/compare/v0.5.0...v1.0.0
 [0.5.0]: https://github.com/d-lebed/esphome-awenta-auros/releases/tag/v0.5.0
