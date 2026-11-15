@@ -15,6 +15,7 @@ class AwentaAurosClimate : public climate::Climate, public Component {
 
   void apply_bus_fan_mode(int32_t fs);
   void apply_bus_preset(int32_t therm);
+  void apply_bus_season_mode(int32_t season_idx);
 
  protected:
   climate::ClimateTraits traits() override;

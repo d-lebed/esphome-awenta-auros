@@ -118,6 +118,21 @@ void AwentaAurosComponent::update_register_current(uint16_t reg_id, int32_t curr
         }
       }
 #endif
+    } else if (reg_id == REG_SEASON_MODE) {
+#ifdef USE_SELECT
+      if (this->season_mode_select_ != nullptr) {
+        std::string season_str = season_mode_to_string(current_raw);
+        if (!season_str.empty()) {
+          this->season_mode_select_->publish_state(season_str);
+        }
+      }
+#endif
+#ifdef USE_AWENTA_AUROS_CLIMATE
+      if (this->climate_ != nullptr) {
+        this->climate_->apply_bus_season_mode(current_raw);
+        this->climate_->publish_state();
+      }
+#endif
     }
 #ifdef USE_NUMBER
     else if (reg_id == REG_COMFORT_TEMP && this->comfort_temperature_number_ != nullptr) {
@@ -326,10 +341,34 @@ void AwentaAurosComponent::set_desired_bypass_mode_index(size_t index) {
 #endif
 }
 
+void AwentaAurosComponent::set_desired_season_mode(const std::string &option) {
+  int32_t mode = season_mode_from_string(option);
+  if (mode < 0) {
+    ESP_LOGW(TAG_RWT, "Unknown season mode option: %s", option.c_str());
+    return;
+  }
+  this->set_desired_season_mode(mode);
+}
+
+void AwentaAurosComponent::set_desired_season_mode_index(size_t index) {
+  this->set_desired_season_mode((int32_t) index);
+}
+
 void AwentaAurosComponent::set_desired_season_mode(int32_t season_mode) {
   if (season_mode < 0 || season_mode > 2)
     return;
   this->set_desired_register(REG_SEASON_MODE, season_mode);
+#ifdef USE_SELECT
+  if (this->season_mode_select_ != nullptr) {
+    this->season_mode_select_->publish_state(season_mode_to_string(season_mode));
+  }
+#endif
+#ifdef USE_AWENTA_AUROS_CLIMATE
+  if (this->climate_ != nullptr) {
+    this->climate_->apply_bus_season_mode(season_mode);
+    this->climate_->publish_state();
+  }
+#endif
 }
 
 void AwentaAurosComponent::set_desired_temperature(uint16_t reg_id, float temp_c) {

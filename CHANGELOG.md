@@ -8,9 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Season Mode Select (`select`):** Added `season_mode` dropdown (`Winter`, `Summer`, `Cooling`, default icon `mdi:sun-snowflake-variant`) to control Register `64` (`__trybpracyinstalacji`) directly from Home Assistant.
 - **Away & Holiday Switches (`switch`) and Passive `config_holiday` Sensor (`binary_sensor`):**
   - Added `away` (`Reg 98` / `__trybpozadomemznano1`) and `holiday` (`Reg 89` / `__urlop`) switches to control Away (*Poza domem*) and Holiday/Vacation (*Urlop*) modes from Home Assistant.
   - Added `config_holiday` diagnostic binary sensor passively decoded from `E4 21` (`From: 41 -> To: 100`) byte `f[28]` bit `0` (`(f[28] & 0x01) == 0`).
+
+### Changed
+- **1:1 Climate Season Mode Mapping (`climate`):** Mapped the 3 recuperator season modes directly to 3 Home Assistant climate modes (`0 = Winter` ↔ `HEAT`, `1 = Summer` ↔ `FAN_ONLY`, `2 = Cooling` ↔ `COOL`) and removed the redundant `HEAT_COOL` mode.
 
 ### Removed
 - **Unused `time_id` Hub Configuration Option:** Removed the unused `time_id` option from `awenta_auros` (time and day of week are decoded directly from the NANO COLOR 2 panel's RTC broadcast in `E4 21`).

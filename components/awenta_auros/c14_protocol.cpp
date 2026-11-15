@@ -115,4 +115,27 @@ int32_t bypass_mode_from_string(const std::string &option) {
   return -1;
 }
 
+std::string season_mode_to_string(int32_t mode) {
+  switch (mode) {
+    case 0:
+      return "Winter";
+    case 1:
+      return "Summer";
+    case 2:
+      return "Cooling";
+    default:
+      return "";
+  }
+}
+
+int32_t season_mode_from_string(const std::string &option) {
+  if (option == "Winter")
+    return 0;
+  if (option == "Summer")
+    return 1;
+  if (option == "Cooling")
+    return 2;
+  return -1;
+}
+
 }  // namespace esphome::awenta_auros

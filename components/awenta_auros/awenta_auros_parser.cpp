@@ -149,13 +149,7 @@ void AwentaAurosComponent::handle_master_status_(const std::vector<uint8_t> &rx_
     }
 
     if (!this->managed_registers_[REG_SEASON_MODE].has_desired) {
-      if (season_idx == 0) {
-        this->climate_->mode = climate::CLIMATE_MODE_HEAT;
-      } else if (season_idx == 1) {
-        this->climate_->mode = climate::CLIMATE_MODE_HEAT_COOL;
-      } else {
-        this->climate_->mode = climate::CLIMATE_MODE_COOL;
-      }
+      this->climate_->apply_bus_season_mode(season_idx);
     }
 
     if (active_gear == 0) {

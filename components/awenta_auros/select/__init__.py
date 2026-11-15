@@ -11,10 +11,12 @@ DEPENDENCIES = ["awenta_auros"]
 FanModeSelect = awenta_auros_ns.class_("FanModeSelect", select.Select)
 ThermostatModeSelect = awenta_auros_ns.class_("ThermostatModeSelect", select.Select)
 BypassModeSelect = awenta_auros_ns.class_("BypassModeSelect", select.Select)
+SeasonModeSelect = awenta_auros_ns.class_("SeasonModeSelect", select.Select)
 
 CONF_FAN_MODE = "fan_mode"
 CONF_THERMOSTAT_MODE = "thermostat_mode"
 CONF_BYPASS_MODE = "bypass_mode"
+CONF_SEASON_MODE = "season_mode"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -31,6 +33,10 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_BYPASS_MODE): select.select_schema(
             BypassModeSelect,
             icon="mdi:valve",
+        ),
+        cv.Optional(CONF_SEASON_MODE): select.select_schema(
+            SeasonModeSelect,
+            icon="mdi:sun-snowflake-variant",
         ),
     }
 )
@@ -59,3 +65,10 @@ async def to_code(config: ConfigType) -> None:
         )
         await cg.register_parented(sel, hub)
         cg.add(hub.set_bypass_mode_select(sel))
+    if conf := config.get(CONF_SEASON_MODE):
+        sel = await select.new_select(
+            conf,
+            options=["Winter", "Summer", "Cooling"],
+        )
+        await cg.register_parented(sel, hub)
+        cg.add(hub.set_season_mode_select(sel))

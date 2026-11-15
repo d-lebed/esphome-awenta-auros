@@ -53,6 +53,8 @@ select:
       name: "Thermostat Mode"
     bypass_mode:
       name: "Bypass Mode"
+    season_mode:
+      name: "Season Mode"
 
 switch:
   - platform: awenta_auros

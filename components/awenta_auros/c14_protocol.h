@@ -59,5 +59,7 @@ std::string thermostat_mode_to_string(int32_t mode);
 int32_t thermostat_mode_from_string(const std::string &option);
 std::string bypass_mode_to_string(int32_t mode);
 int32_t bypass_mode_from_string(const std::string &option);
+std::string season_mode_to_string(int32_t mode);
+int32_t season_mode_from_string(const std::string &option);
 
 }  // namespace esphome::awenta_auros

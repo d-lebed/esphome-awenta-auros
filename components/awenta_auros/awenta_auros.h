@@ -103,6 +103,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_SELECT(fan_mode)
   SUB_SELECT(thermostat_mode)
   SUB_SELECT(bypass_mode)
+  SUB_SELECT(season_mode)
 #endif
 
 #ifdef USE_SWITCH
@@ -161,12 +162,14 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void set_desired_thermostat_mode_index(size_t index);
   void set_desired_bypass_mode(const std::string &option);
   void set_desired_bypass_mode_index(size_t index);
+  void set_desired_season_mode(const std::string &option);
+  void set_desired_season_mode_index(size_t index);
+  void set_desired_season_mode(int32_t season_mode);
   void set_desired_airing(bool enabled);
   void set_desired_fireplace(bool enabled);
   void set_desired_ghe(bool enabled);
   void set_desired_away(bool enabled);
   void set_desired_holiday(bool enabled);
-  void set_desired_season_mode(int32_t season_mode);
   void set_desired_temperature(uint16_t reg_id, float temp_c);
   void set_desired_preheater_min_temperature(float temp_c);
   void set_desired_fan_speed_percent(uint16_t reg_id, float percent);

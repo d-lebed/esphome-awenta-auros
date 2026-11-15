@@ -134,7 +134,7 @@ climate:
 
 | Climate Attribute            | Home Assistant Option                                       | C14 Mapping                                                                                                                                         |
 | ---------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Mode** (Season)            | `Heat`<br>`Heat/Cool` (`Auto`) / `Fan only`<br>`Cool`       | Register `64`:<br>`0` = Winter<br>`1` = Summer (mapped to `Heat/Cool` for Apple HomeKit compatibility)<br>`2` = Cooling                             |
+| **Mode** (Season)            | `Heat`<br>`Fan only`<br>`Cool`                              | Register `64`:<br>`0` = Winter (`Heat`)<br>`1` = Summer (`Fan only`, no heating/cooling)<br>`2` = Cooling (`Cool`)                                  |
 | **Preset** (Thermostat Mode) | `Eco`<br>`Boost`<br>`Home`                                  | Register `88`:<br>`0` = Schedule<br>`1` = Party / Holiday<br>`2` = Manual                                                                           |
 | **Fan Mode**                 | `Off`<br>`Low`<br>`Medium`<br>`High`<br>`Diffuse`<br>`Auto` | Register `80`:<br>`0` = Off (Gear 0)<br>`1` = Speed 1 (Gear 1)<br>`2` = Speed 2 (Gear 2)<br>`3` = Speed 3 (Gear 3)<br>`4` = Party<br>`5` = Schedule |
 | **Target Temperature**       | `10.0 .. 30.0 °C` (step `0.1 °C`)                           | Updates Manual setpoint (Register `6`) and switches Thermostat Mode to `Manual` (Register `88 = 2`)                                                 |
@@ -164,6 +164,8 @@ select:
       name: "Thermostat Mode" # Options: Schedule, Party, Manual (Reg 88)
     bypass_mode:
       name: "Bypass Mode" # Options: Off, Auto, On (Reg 79)
+    season_mode:
+      name: "Season Mode" # Options: Winter, Summer, Cooling (Reg 64)
 ```
 
 ---

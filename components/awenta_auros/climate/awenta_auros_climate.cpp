@@ -42,6 +42,16 @@ void AwentaAurosClimate::apply_bus_preset(int32_t therm) {
   }
 }
 
+void AwentaAurosClimate::apply_bus_season_mode(int32_t season_idx) {
+  if (season_idx == 0) {
+    this->mode = climate::CLIMATE_MODE_HEAT;
+  } else if (season_idx == 1) {
+    this->mode = climate::CLIMATE_MODE_FAN_ONLY;
+  } else if (season_idx == 2) {
+    this->mode = climate::CLIMATE_MODE_COOL;
+  }
+}
+
 climate::ClimateTraits AwentaAurosClimate::traits() {
   auto traits = climate::ClimateTraits();
   traits.add_feature_flags(climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE |
@@ -49,9 +59,8 @@ climate::ClimateTraits AwentaAurosClimate::traits() {
                            climate::CLIMATE_SUPPORTS_ACTION);
   traits.set_supported_modes({
       climate::CLIMATE_MODE_HEAT,
-      climate::CLIMATE_MODE_COOL,
-      climate::CLIMATE_MODE_HEAT_COOL,
       climate::CLIMATE_MODE_FAN_ONLY,
+      climate::CLIMATE_MODE_COOL,
   });
   traits.set_supported_fan_modes({
       climate::CLIMATE_FAN_OFF,
@@ -80,8 +89,8 @@ void AwentaAurosClimate::control(const climate::ClimateCall &call) {
     if (this->parent_ != nullptr) {
       if (mode == climate::CLIMATE_MODE_HEAT) {
         this->parent_->set_desired_season_mode(0);  // Winter
-      } else if (mode == climate::CLIMATE_MODE_HEAT_COOL || mode == climate::CLIMATE_MODE_FAN_ONLY) {
-        this->parent_->set_desired_season_mode(1);  // Summer
+      } else if (mode == climate::CLIMATE_MODE_FAN_ONLY) {
+        this->parent_->set_desired_season_mode(1);  // Summer (ventilation only)
       } else if (mode == climate::CLIMATE_MODE_COOL) {
         this->parent_->set_desired_season_mode(2);  // Cooling
       }

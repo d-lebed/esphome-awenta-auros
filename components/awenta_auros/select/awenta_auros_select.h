@@ -21,4 +21,9 @@ class BypassModeSelect final : public select::Select, public Parented<AwentaAuro
   void control(size_t index) override;
 };
 
+class SeasonModeSelect final : public select::Select, public Parented<AwentaAurosComponent> {
+ protected:
+  void control(size_t index) override;
+};
+
 }  // namespace esphome::awenta_auros
