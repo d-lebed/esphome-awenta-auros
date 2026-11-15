@@ -67,6 +67,8 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_SENSOR(config_manual_temperature)
   SUB_SENSOR(config_away_temperature)
   SUB_SENSOR(config_preheater_min_temperature)
+  SUB_SENSOR(config_defrost_temperature)
+  SUB_SENSOR(config_defrost_hysteresis)
   SUB_SENSOR(config_supply_fan_speed_1)
   SUB_SENSOR(config_supply_fan_speed_2)
   SUB_SENSOR(config_supply_fan_speed_3)
@@ -95,6 +97,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_TEXT_SENSOR(config_thermostat_mode)
   SUB_TEXT_SENSOR(config_bypass_mode)
   SUB_TEXT_SENSOR(config_ghe_mode)
+  SUB_TEXT_SENSOR(config_defrost_method)
   SUB_TEXT_SENSOR(time)
   SUB_TEXT_SENSOR(day_of_week)
 #endif
@@ -104,6 +107,7 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_SELECT(thermostat_mode)
   SUB_SELECT(bypass_mode)
   SUB_SELECT(season_mode)
+  SUB_SELECT(defrost_method)
 #endif
 
 #ifdef USE_SWITCH
@@ -121,6 +125,8 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   SUB_NUMBER(manual_temperature)
   SUB_NUMBER(away_temperature)
   SUB_NUMBER(preheater_min_temperature)
+  SUB_NUMBER(defrost_temperature)
+  SUB_NUMBER(defrost_hysteresis)
   SUB_NUMBER(supply_fan_speed_1)
   SUB_NUMBER(supply_fan_speed_2)
   SUB_NUMBER(supply_fan_speed_3)
@@ -165,6 +171,8 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void set_desired_season_mode(const std::string &option);
   void set_desired_season_mode_index(size_t index);
   void set_desired_season_mode(int32_t season_mode);
+  void set_desired_defrost_method(const std::string &option);
+  void set_desired_defrost_method_index(size_t index);
   void set_desired_airing(bool enabled);
   void set_desired_fireplace(bool enabled);
   void set_desired_ghe(bool enabled);
@@ -172,6 +180,8 @@ class AwentaAurosComponent : public Component, public uart::UARTDevice {
   void set_desired_holiday(bool enabled);
   void set_desired_temperature(uint16_t reg_id, float temp_c);
   void set_desired_preheater_min_temperature(float temp_c);
+  void set_desired_defrost_temperature(float temp_c);
+  void set_desired_defrost_hysteresis(float hysteresis_c);
   void set_desired_fan_speed_percent(uint16_t reg_id, float percent);
   void set_climate_target_temperature(float temp_c);
 

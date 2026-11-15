@@ -439,29 +439,41 @@ void AwentaAurosComponent::parse_frame_() {
     }
 #endif
     if (this->rx_buffer_[4] == 0x39) {
+      int32_t defrost_hyst_raw = (int32_t) this->rx_buffer_[13] - 20;
+      float defrost_hyst = defrost_hyst_raw * 0.5f;
       int32_t exhaust_airing_speed = (int32_t) this->rx_buffer_[14];
       int32_t supply_airing_speed = (int32_t) this->rx_buffer_[15];
+      int32_t defrost_temp_raw = (int32_t) this->rx_buffer_[16] - 20;
+      float defrost_temp = defrost_temp_raw * 0.5f;
       int32_t exhaust_speed_1 = (int32_t) this->rx_buffer_[20];
       int32_t exhaust_speed_2 = (int32_t) this->rx_buffer_[21];
       int32_t exhaust_speed_3 = (int32_t) this->rx_buffer_[22];
       int32_t supply_speed_1 = (int32_t) this->rx_buffer_[23];
       int32_t supply_speed_2 = (int32_t) this->rx_buffer_[24];
       int32_t supply_speed_3 = (int32_t) this->rx_buffer_[25];
+      int32_t defrost_method = (int32_t) ((this->rx_buffer_[27] >> 4) & 0x03);
 
+      this->update_register_current(REG_DEFROST_HYSTERESIS, defrost_hyst_raw);
       this->update_register_current(REG_EXHAUST_FAN_AIRING_SPEED, exhaust_airing_speed);
       this->update_register_current(REG_SUPPLY_FAN_AIRING_SPEED, supply_airing_speed);
+      this->update_register_current(REG_DEFROST_TEMP, defrost_temp_raw);
       this->update_register_current(REG_EXHAUST_FAN_SPEED_1, exhaust_speed_1);
       this->update_register_current(REG_EXHAUST_FAN_SPEED_2, exhaust_speed_2);
       this->update_register_current(REG_EXHAUST_FAN_SPEED_3, exhaust_speed_3);
       this->update_register_current(REG_SUPPLY_FAN_SPEED_1, supply_speed_1);
       this->update_register_current(REG_SUPPLY_FAN_SPEED_2, supply_speed_2);
       this->update_register_current(REG_SUPPLY_FAN_SPEED_3, supply_speed_3);
+      this->update_register_current(REG_DEFROST_METHOD, defrost_method);
 
 #ifdef USE_SENSOR
+      if (this->config_defrost_hysteresis_sensor_ != nullptr)
+        this->config_defrost_hysteresis_sensor_->publish_state(defrost_hyst);
       if (this->config_exhaust_fan_airing_speed_sensor_ != nullptr)
         this->config_exhaust_fan_airing_speed_sensor_->publish_state((float) exhaust_airing_speed);
       if (this->config_supply_fan_airing_speed_sensor_ != nullptr)
         this->config_supply_fan_airing_speed_sensor_->publish_state((float) supply_airing_speed);
+      if (this->config_defrost_temperature_sensor_ != nullptr)
+        this->config_defrost_temperature_sensor_->publish_state(defrost_temp);
       if (this->config_exhaust_fan_speed_1_sensor_ != nullptr)
         this->config_exhaust_fan_speed_1_sensor_->publish_state((float) exhaust_speed_1);
       if (this->config_exhaust_fan_speed_2_sensor_ != nullptr)
@@ -475,12 +487,19 @@ void AwentaAurosComponent::parse_frame_() {
       if (this->config_supply_fan_speed_3_sensor_ != nullptr)
         this->config_supply_fan_speed_3_sensor_->publish_state((float) supply_speed_3);
 #endif
+#ifdef USE_TEXT_SENSOR
+      if (this->config_defrost_method_text_sensor_ != nullptr) {
+        std::string dm_str = defrost_method_to_string(defrost_method);
+        if (dm_str.empty())
+          dm_str = "Unexpected (" + std::to_string(defrost_method) + ")";
+        this->config_defrost_method_text_sensor_->publish_state(dm_str);
+      }
+#endif
       ESP_LOGD(TAG,
-               "Unparsed E3 44 (0x39) bytes: [5..13]=%02X %02X %02X %02X %02X %02X %02X %02X %02X [16..19]=%02X %02X %02X %02X [26]=%02X",
+               "Unparsed E3 44 (0x39) bytes: [5..12]=%02X %02X %02X %02X %02X %02X %02X %02X [17..19]=%02X %02X %02X [26]=%02X",
                this->rx_buffer_[5], this->rx_buffer_[6], this->rx_buffer_[7], this->rx_buffer_[8],
                this->rx_buffer_[9], this->rx_buffer_[10], this->rx_buffer_[11], this->rx_buffer_[12],
-               this->rx_buffer_[13], this->rx_buffer_[16], this->rx_buffer_[17], this->rx_buffer_[18],
-               this->rx_buffer_[19], this->rx_buffer_[26]);
+               this->rx_buffer_[17], this->rx_buffer_[18], this->rx_buffer_[19], this->rx_buffer_[26]);
     } else if (this->rx_buffer_[4] == 0x3A) {
       int32_t preheater_min_raw = (int32_t) this->rx_buffer_[12] - 20;
       float preheater_min_temp = preheater_min_raw * 0.5f;

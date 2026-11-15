@@ -102,9 +102,9 @@ Stored in NANO COLOR 2 memory and cyclically pushed to the AERO 4A2 module via `
 | **164** *(163 in 2023 manual)* | 1165 (`1164`) | — | 0 | 100 | 4 | — | Secondary heater `Ki` gain |
 | **165** *(164 in 2023 manual)* | 1166 (`1165`) | — | 0 | 100 | 20 | `s` | Fan rundown time |
 | **166** *(165 in 2023 manual)* | 1167 (`1166`) | — | 0 | 365 | 0 | `days` | Filter replacement interval |
-| **167** *(166 in 2023 manual)* | 1168 (`1167`) | — | -20 | 100 | 5 | `°C` | Defrost threshold temperature |
-| **168** *(167 in 2023 manual)* | 1169 (`1168`) | — | 1 | 9 | 3 | `×0.2` | Defrost regulation band |
-| **169** *(168 in 2023 manual)* | 1170 (`1169`) | — | 0 | 3 | 0 | — | Defrost method (`0`=stop supply fan, `1`=pre-heater, `2`=pre-heater+50%, `3`=bypass) |
+| **167** *(166 in 2023 manual)* | 1168 (`1167`) | — | -20 | 20 | 10 | `0.5 °C` (`-10..+10 °C`) | **Defrost threshold temperature** (`temp = raw * 0.5 °C`, default `10` = `5.0 °C`; broadcast in `E3 44` page `0x39` byte `f[16] = raw + 20`) |
+| **168** *(167 in 2023 manual)* | 1169 (`1168`) | — | 1 | 9 | 3 | `0.5 °C` (`0.5..4.5 °C`) | **Defrost regulation band / hysteresis** (`hyst = raw * 0.5 °C`, default `3` = `1.5 °C`; broadcast in `E3 44` page `0x39` byte `f[13] = raw + 20`) |
+| **169** *(168 in 2023 manual)* | 1170 (`1169`) | — | 0 | 3 | 0 | — | **Defrost / Thawing method** (`0`=Fan Off, `1`=Heater, `2`=Heater + Fan, `3`=Bypass; broadcast in `E3 44` page `0x39` bits `(f[27] >> 4) & 0x03`) |
 | **170** *(169 in 2023 manual)* | 1171 (`1170`) | — | 0 | 1 | 1 | — | Use intake temperature as outdoor temperature |
 | **171** *(170 in 2023 manual)* | 1172 (`1171`) | — | 0 | 3 | 0 | — | Relay R3 function |
 | **172** *(171 in 2023 manual)* | 1173 (`1172`) | — | 0 | 1 | 1 | — | Digital input DI2 function |

@@ -133,6 +133,23 @@ void AwentaAurosComponent::update_register_current(uint16_t reg_id, int32_t curr
         this->climate_->publish_state();
       }
 #endif
+    } else if (reg_id == REG_DEFROST_METHOD) {
+#ifdef USE_SELECT
+      if (this->defrost_method_select_ != nullptr) {
+        std::string dm_str = defrost_method_to_string(current_raw);
+        if (!dm_str.empty()) {
+          this->defrost_method_select_->publish_state(dm_str);
+        }
+      }
+#endif
+#ifdef USE_TEXT_SENSOR
+      if (this->config_defrost_method_text_sensor_ != nullptr) {
+        std::string dm_str = defrost_method_to_string(current_raw);
+        if (!dm_str.empty()) {
+          this->config_defrost_method_text_sensor_->publish_state(dm_str);
+        }
+      }
+#endif
     }
 #ifdef USE_NUMBER
     else if (reg_id == REG_COMFORT_TEMP && this->comfort_temperature_number_ != nullptr) {
@@ -148,6 +165,11 @@ void AwentaAurosComponent::update_register_current(uint16_t reg_id, int32_t curr
     } else if (reg_id == REG_PREHEATER_MIN_TEMP &&
                this->preheater_min_temperature_number_ != nullptr) {
       this->preheater_min_temperature_number_->publish_state(current_raw * 0.5f);
+    } else if (reg_id == REG_DEFROST_TEMP && this->defrost_temperature_number_ != nullptr) {
+      this->defrost_temperature_number_->publish_state(current_raw * 0.5f);
+    } else if (reg_id == REG_DEFROST_HYSTERESIS &&
+               this->defrost_hysteresis_number_ != nullptr) {
+      this->defrost_hysteresis_number_->publish_state(current_raw * 0.5f);
     } else if (reg_id == REG_SUPPLY_FAN_SPEED_1 && this->supply_fan_speed_1_number_ != nullptr) {
       this->supply_fan_speed_1_number_->publish_state((float) current_raw);
     } else if (reg_id == REG_SUPPLY_FAN_SPEED_2 && this->supply_fan_speed_2_number_ != nullptr) {
@@ -166,6 +188,18 @@ void AwentaAurosComponent::update_register_current(uint16_t reg_id, int32_t curr
     } else if (reg_id == REG_EXHAUST_FAN_AIRING_SPEED &&
                this->exhaust_fan_airing_speed_number_ != nullptr) {
       this->exhaust_fan_airing_speed_number_->publish_state((float) current_raw);
+    }
+#endif
+#ifdef USE_SENSOR
+    if (reg_id == REG_PREHEATER_MIN_TEMP &&
+        this->config_preheater_min_temperature_sensor_ != nullptr) {
+      this->config_preheater_min_temperature_sensor_->publish_state(current_raw * 0.5f);
+    } else if (reg_id == REG_DEFROST_TEMP &&
+               this->config_defrost_temperature_sensor_ != nullptr) {
+      this->config_defrost_temperature_sensor_->publish_state(current_raw * 0.5f);
+    } else if (reg_id == REG_DEFROST_HYSTERESIS &&
+               this->config_defrost_hysteresis_sensor_ != nullptr) {
+      this->config_defrost_hysteresis_sensor_->publish_state(current_raw * 0.5f);
     }
 #endif
   }
@@ -394,6 +428,45 @@ void AwentaAurosComponent::set_desired_preheater_min_temperature(float temp_c) {
   if (raw > 20)
     raw = 20;
   this->set_desired_register(REG_PREHEATER_MIN_TEMP, raw);
+}
+
+void AwentaAurosComponent::set_desired_defrost_temperature(float temp_c) {
+  int32_t raw = (int32_t) std::round(temp_c * 2.0f);
+  if (raw < -20)
+    raw = -20;
+  if (raw > 20)
+    raw = 20;
+  this->set_desired_register(REG_DEFROST_TEMP, raw);
+}
+
+void AwentaAurosComponent::set_desired_defrost_hysteresis(float hysteresis_c) {
+  int32_t raw = (int32_t) std::round(hysteresis_c * 2.0f);
+  if (raw < 1)
+    raw = 1;
+  if (raw > 9)
+    raw = 9;
+  this->set_desired_register(REG_DEFROST_HYSTERESIS, raw);
+}
+
+void AwentaAurosComponent::set_desired_defrost_method(const std::string &option) {
+  int32_t method = defrost_method_from_string(option);
+  if (method < 0) {
+    ESP_LOGW(TAG_RWT, "Unknown defrost method option: %s", option.c_str());
+    return;
+  }
+  this->set_desired_defrost_method_index((size_t) method);
+}
+
+void AwentaAurosComponent::set_desired_defrost_method_index(size_t index) {
+  int32_t method = (int32_t) index;
+  if (method < 0 || method > 3)
+    return;
+  this->set_desired_register(REG_DEFROST_METHOD, method);
+#ifdef USE_SELECT
+  if (this->defrost_method_select_ != nullptr) {
+    this->defrost_method_select_->publish_state(defrost_method_to_string(method));
+  }
+#endif
 }
 
 void AwentaAurosComponent::set_desired_fan_speed_percent(uint16_t reg_id, float percent) {

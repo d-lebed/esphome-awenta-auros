@@ -138,4 +138,31 @@ int32_t season_mode_from_string(const std::string &option) {
   return -1;
 }
 
+std::string defrost_method_to_string(int32_t method) {
+  switch (method) {
+    case 0:
+      return "Fan Off";
+    case 1:
+      return "Heater";
+    case 2:
+      return "Heater + Fan";
+    case 3:
+      return "Bypass";
+    default:
+      return "";
+  }
+}
+
+int32_t defrost_method_from_string(const std::string &option) {
+  if (option == "Fan Off")
+    return 0;
+  if (option == "Heater")
+    return 1;
+  if (option == "Heater + Fan")
+    return 2;
+  if (option == "Bypass")
+    return 3;
+  return -1;
+}
+
 }  // namespace esphome::awenta_auros

@@ -55,6 +55,8 @@ select:
       name: "Bypass Mode"
     season_mode:
       name: "Season Mode"
+    defrost_method:
+      name: "Defrost Method"
 
 switch:
   - platform: awenta_auros
@@ -83,6 +85,10 @@ number:
       name: "Away Temperature Setpoint"
     preheater_min_temperature:
       name: "Preheater Min Temperature Setpoint"
+    defrost_temperature:
+      name: "Defrost Temperature Setpoint"
+    defrost_hysteresis:
+      name: "Defrost Hysteresis Setpoint"
     supply_fan_speed_1:
       name: "Supply Fan Speed 1 Setpoint"
     supply_fan_speed_2:
@@ -173,6 +179,10 @@ sensor:
       name: "Config Away Temperature"
     config_preheater_min_temperature:
       name: "Config Preheater Min Temperature"
+    config_defrost_temperature:
+      name: "Config Defrost Temperature"
+    config_defrost_hysteresis:
+      name: "Config Defrost Hysteresis"
     config_supply_fan_speed_1:
       name: "Config Supply Fan Speed 1"
     config_supply_fan_speed_2:
@@ -206,6 +216,8 @@ text_sensor:
       name: "Config Bypass Mode"
     config_ghe_mode:
       name: "Config GHE Mode"
+    config_defrost_method:
+      name: "Config Defrost Method"
     time:
       name: "Time"
     day_of_week:

@@ -46,6 +46,9 @@ inline constexpr uint16_t REG_EXHAUST_FAN_SPEED_2 = 146;
 inline constexpr uint16_t REG_EXHAUST_FAN_SPEED_3 = 147;
 inline constexpr uint16_t REG_EXHAUST_FAN_AIRING_SPEED = 148;
 inline constexpr uint16_t REG_PREHEATER_MIN_TEMP = 161;
+inline constexpr uint16_t REG_DEFROST_TEMP = 167;
+inline constexpr uint16_t REG_DEFROST_HYSTERESIS = 168;
+inline constexpr uint16_t REG_DEFROST_METHOD = 169;
 
 float decode_c14_value(uint8_t h, uint8_t l);
 void encode_c14_value(float value, uint8_t &h, uint8_t &l);
@@ -61,5 +64,7 @@ std::string bypass_mode_to_string(int32_t mode);
 int32_t bypass_mode_from_string(const std::string &option);
 std::string season_mode_to_string(int32_t mode);
 int32_t season_mode_from_string(const std::string &option);
+std::string defrost_method_to_string(int32_t method);
+int32_t defrost_method_from_string(const std::string &option);
 
 }  // namespace esphome::awenta_auros

@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Defrost / Thawing Configuration & Diagnostic Entities (`number`, `select`, `sensor`, `text_sensor`):**
+  - Added configuration controls (`entity_category: config`):
+    - `defrost_temperature` (`number`, Reg `167`, `-10.0 .. 10.0 °C`, `0.5 °C` step, default icon `mdi:snowflake-melt`)
+    - `defrost_hysteresis` (`number`, Reg `168`, `0.5 .. 4.5 °C`, `0.5 °C` step, default icon `mdi:thermometer-plus`)
+    - `defrost_method` (`select`, Reg `169`, options `Fan Off`, `Heater`, `Heater + Fan`, `Bypass`, default icon `mdi:snowflake-melt`)
+  - Added passive diagnostic sensors (`entity_category: diagnostic`) decoded from `E3 44` (`From: 41 -> To: 99`, page `0x39`) bytes `f[16]`, `f[13]`, and `f[27]`:
+    - `config_defrost_temperature` (`sensor`, `temp_c = (f[16] - 20) * 0.5 °C`)
+    - `config_defrost_hysteresis` (`sensor`, `hyst_c = (f[13] - 20) * 0.5 °C`)
+    - `config_defrost_method` (`text_sensor`, `(f[27] >> 4) & 0x03`)
 - **Season Mode Select (`select`):** Added `season_mode` dropdown (`Winter`, `Summer`, `Cooling`, default icon `mdi:sun-snowflake-variant`) to control Register `64` (`__trybpracyinstalacji`) directly from Home Assistant.
 - **Away & Holiday Switches (`switch`) and Passive `config_holiday` Sensor (`binary_sensor`):**
   - Added `away` (`Reg 98` / `__trybpozadomemznano1`) and `holiday` (`Reg 89` / `__urlop`) switches to control Away (*Poza domem*) and Holiday/Vacation (*Urlop*) modes from Home Assistant.

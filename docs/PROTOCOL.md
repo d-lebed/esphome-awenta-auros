@@ -91,11 +91,15 @@ During normal operation, the NANO COLOR 2 Master (`41`) continuously runs a ~12.
 2. **`E3 44` (`From: 41 -> To: 99`, command `'D'`) — Master Poll & Settings Push to AERO 4A2:**
    - Alternating 3-page configuration (`f[4] = 0x39`, `0x3A`, `0x3B`) containing fan speed percentages for Gears 1/2/3/Airing, heater PID parameters, and sensor thresholds.
    - On page `f[4] = 0x39`:
+     - `f[13]`: Defrost regulation band / hysteresis (`hyst_c = (f[13] - 20) * 0.5 °C`, `raw = 1..9` = `0.5..4.5 °C`; Register `168`).
      - `f[14]`: Exhaust fan Airing speed (`%`, Register `148`).
      - `f[15]`: Supply fan Airing speed (`%`, Register `144`).
+     - `f[16]`: Defrost threshold temperature (`temp_c = (f[16] - 20) * 0.5 °C`, `raw = -20..20` = `-10.0..+10.0 °C`; Register `167`).
      - `f[20..22]`: Exhaust fan Speed 1 / Speed 2 / Speed 3 (`%`, Registers `145..147`).
      - `f[23..25]`: Supply fan Speed 1 / Speed 2 / Speed 3 (`%`, Registers `141..143`).
-     - `f[27]`: Bitfield combining Season (`0x00` = Winter, `0x08` = Summer, `0x10` = Cooling), Bypass command (`0..2`), and Airing overlay (`+0x20`).
+     - `f[27]`: Bitfield:
+       - Bits `4..5` (`(f[27] >> 4) & 0x03`): Defrost / Thawing method (`0` = Fan Off, `1` = Heater, `2` = Heater + Fan, `3` = Bypass; Register `169`).
+       - Lower bits (`0x0F`): Active gear and status flags.
    - On page `f[4] = 0x3A`:
      - `f[6..9]`: Recirculation `AO3` Speed 1 / Speed 2 / Speed 3 / Airing (`%`, Registers `179..182`).
      - `f[10]`: Pre-heater lock temperature (`temp_c = (f[10] - 20) * 0.5 °C`, `0x00` = `-10.0 °C` = `OFF`; Register `160`).

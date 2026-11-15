@@ -41,6 +41,8 @@ CONF_CONFIG_ECO_COOLING_TEMPERATURE = "config_eco_cooling_temperature"
 CONF_CONFIG_MANUAL_TEMPERATURE = "config_manual_temperature"
 CONF_CONFIG_AWAY_TEMPERATURE = "config_away_temperature"
 CONF_CONFIG_PREHEATER_MIN_TEMPERATURE = "config_preheater_min_temperature"
+CONF_CONFIG_DEFROST_TEMPERATURE = "config_defrost_temperature"
+CONF_CONFIG_DEFROST_HYSTERESIS = "config_defrost_hysteresis"
 CONF_CONFIG_SUPPLY_FAN_SPEED_1 = "config_supply_fan_speed_1"
 CONF_CONFIG_SUPPLY_FAN_SPEED_2 = "config_supply_fan_speed_2"
 CONF_CONFIG_SUPPLY_FAN_SPEED_3 = "config_supply_fan_speed_3"
@@ -149,6 +151,12 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CONFIG_PREHEATER_MIN_TEMPERATURE): _diagnostic_temp_schema(
             "mdi:heating-coil"
         ),
+        cv.Optional(CONF_CONFIG_DEFROST_TEMPERATURE): _diagnostic_temp_schema(
+            "mdi:snowflake-melt"
+        ),
+        cv.Optional(CONF_CONFIG_DEFROST_HYSTERESIS): _diagnostic_temp_schema(
+            "mdi:thermometer-plus"
+        ),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_1): _diagnostic_speed_schema("mdi:fan-speed-1"),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_2): _diagnostic_speed_schema("mdi:fan-speed-2"),
         cv.Optional(CONF_CONFIG_SUPPLY_FAN_SPEED_3): _diagnostic_speed_schema("mdi:fan-speed-3"),
@@ -187,6 +195,8 @@ async def to_code(config: ConfigType) -> None:
         CONF_CONFIG_MANUAL_TEMPERATURE,
         CONF_CONFIG_AWAY_TEMPERATURE,
         CONF_CONFIG_PREHEATER_MIN_TEMPERATURE,
+        CONF_CONFIG_DEFROST_TEMPERATURE,
+        CONF_CONFIG_DEFROST_HYSTERESIS,
         CONF_CONFIG_SUPPLY_FAN_SPEED_1,
         CONF_CONFIG_SUPPLY_FAN_SPEED_2,
         CONF_CONFIG_SUPPLY_FAN_SPEED_3,

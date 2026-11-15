@@ -166,6 +166,8 @@ select:
       name: "Bypass Mode" # Options: Off, Auto, On (Reg 79)
     season_mode:
       name: "Season Mode" # Options: Winter, Summer, Cooling (Reg 64)
+    defrost_method:
+      name: "Defrost Method" # Options: Fan Off, Heater, Heater + Fan, Bypass (Reg 169, config)
 ```
 
 ---
@@ -208,6 +210,10 @@ number:
       name: "Away Temperature Setpoint" # Reg 7
     preheater_min_temperature:
       name: "Preheater Min Temperature Setpoint" # Reg 161 (-10.0 °C = Off)
+    defrost_temperature:
+      name: "Defrost Temperature Setpoint" # Reg 167 (-10.0..10.0 °C, step 0.5 °C)
+    defrost_hysteresis:
+      name: "Defrost Hysteresis Setpoint" # Reg 168 (0.5..4.5 °C, step 0.5 °C)
     supply_fan_speed_1:
       name: "Supply Fan Speed 1 Setpoint" # Reg 141 (0..100%)
     supply_fan_speed_2:
@@ -326,6 +332,10 @@ sensor:
       name: "Config Away Temperature"
     config_preheater_min_temperature:
       name: "Config Preheater Min Temperature"
+    config_defrost_temperature:
+      name: "Config Defrost Temperature"
+    config_defrost_hysteresis:
+      name: "Config Defrost Hysteresis"
     config_supply_fan_speed_1:
       name: "Config Supply Fan Speed 1"
     config_supply_fan_speed_2:
@@ -365,6 +375,8 @@ text_sensor:
       name: "Config Bypass Mode"
     config_ghe_mode:
       name: "Config GHE Mode"
+    config_defrost_method:
+      name: "Config Defrost Method"
     time:
       name: "Time"
     day_of_week:

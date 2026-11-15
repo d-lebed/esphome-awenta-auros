@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 from esphome.components import select
 import esphome.config_validation as cv
-from esphome.const import CONF_ID
+from esphome.const import CONF_ID, ENTITY_CATEGORY_CONFIG
 from esphome.types import ConfigType
 
 from .. import CONF_AWENTA_AUROS_ID, AwentaAurosComponent, awenta_auros_ns
@@ -12,11 +12,13 @@ FanModeSelect = awenta_auros_ns.class_("FanModeSelect", select.Select)
 ThermostatModeSelect = awenta_auros_ns.class_("ThermostatModeSelect", select.Select)
 BypassModeSelect = awenta_auros_ns.class_("BypassModeSelect", select.Select)
 SeasonModeSelect = awenta_auros_ns.class_("SeasonModeSelect", select.Select)
+DefrostMethodSelect = awenta_auros_ns.class_("DefrostMethodSelect", select.Select)
 
 CONF_FAN_MODE = "fan_mode"
 CONF_THERMOSTAT_MODE = "thermostat_mode"
 CONF_BYPASS_MODE = "bypass_mode"
 CONF_SEASON_MODE = "season_mode"
+CONF_DEFROST_METHOD = "defrost_method"
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -37,6 +39,11 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_SEASON_MODE): select.select_schema(
             SeasonModeSelect,
             icon="mdi:sun-snowflake-variant",
+        ),
+        cv.Optional(CONF_DEFROST_METHOD): select.select_schema(
+            DefrostMethodSelect,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:snowflake-melt",
         ),
     }
 )
@@ -72,3 +79,10 @@ async def to_code(config: ConfigType) -> None:
         )
         await cg.register_parented(sel, hub)
         cg.add(hub.set_season_mode_select(sel))
+    if conf := config.get(CONF_DEFROST_METHOD):
+        sel = await select.new_select(
+            conf,
+            options=["Fan Off", "Heater", "Heater + Fan", "Bypass"],
+        )
+        await cg.register_parented(sel, hub)
+        cg.add(hub.set_defrost_method_select(sel))

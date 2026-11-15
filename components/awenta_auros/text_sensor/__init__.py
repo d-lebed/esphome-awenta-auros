@@ -15,6 +15,7 @@ CONF_CONFIG_FAN_SPEED = "config_fan_speed"
 CONF_CONFIG_THERMOSTAT_MODE = "config_thermostat_mode"
 CONF_CONFIG_BYPASS_MODE = "config_bypass_mode"
 CONF_CONFIG_GHE_MODE = "config_ghe_mode"
+CONF_CONFIG_DEFROST_METHOD = "config_defrost_method"
 CONF_TIME = "time"
 CONF_DAY_OF_WEEK = "day_of_week"
 
@@ -49,6 +50,10 @@ CONFIG_SCHEMA = cv.Schema(
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
             icon="mdi:tunnel-outline",
         ),
+        cv.Optional(CONF_CONFIG_DEFROST_METHOD): text_sensor.text_sensor_schema(
+            entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+            icon="mdi:snowflake-melt",
+        ),
         cv.Optional(CONF_TIME): text_sensor.text_sensor_schema(
             entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
             icon="mdi:clock-outline",
@@ -71,6 +76,7 @@ async def to_code(config: ConfigType) -> None:
         CONF_CONFIG_THERMOSTAT_MODE,
         CONF_CONFIG_BYPASS_MODE,
         CONF_CONFIG_GHE_MODE,
+        CONF_CONFIG_DEFROST_METHOD,
         CONF_TIME,
         CONF_DAY_OF_WEEK,
     ):

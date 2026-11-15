@@ -22,4 +22,9 @@ void SeasonModeSelect::control(size_t index) {
   this->parent_->set_desired_season_mode_index(index);
 }
 
+void DefrostMethodSelect::control(size_t index) {
+  this->publish_state(index);
+  this->parent_->set_desired_defrost_method_index(index);
+}
+
 }  // namespace esphome::awenta_auros

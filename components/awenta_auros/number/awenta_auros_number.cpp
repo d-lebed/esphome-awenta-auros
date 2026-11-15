@@ -32,6 +32,16 @@ void PreheaterMinTemperatureNumber::control(float value) {
   this->parent_->set_desired_preheater_min_temperature(value);
 }
 
+void DefrostTemperatureNumber::control(float value) {
+  this->publish_state(value);
+  this->parent_->set_desired_defrost_temperature(value);
+}
+
+void DefrostHysteresisNumber::control(float value) {
+  this->publish_state(value);
+  this->parent_->set_desired_defrost_hysteresis(value);
+}
+
 void SupplyFanSpeed1Number::control(float value) {
   this->publish_state(value);
   this->parent_->set_desired_fan_speed_percent(REG_SUPPLY_FAN_SPEED_1, value);

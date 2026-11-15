@@ -36,6 +36,16 @@ class PreheaterMinTemperatureNumber final : public number::Number, public Parent
   void control(float value) override;
 };
 
+class DefrostTemperatureNumber final : public number::Number, public Parented<AwentaAurosComponent> {
+ protected:
+  void control(float value) override;
+};
+
+class DefrostHysteresisNumber final : public number::Number, public Parented<AwentaAurosComponent> {
+ protected:
+  void control(float value) override;
+};
+
 class SupplyFanSpeed1Number final : public number::Number, public Parented<AwentaAurosComponent> {
  protected:
   void control(float value) override;

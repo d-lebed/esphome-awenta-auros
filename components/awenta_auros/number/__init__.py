@@ -22,6 +22,8 @@ AwayTemperatureNumber = awenta_auros_ns.class_("AwayTemperatureNumber", number.N
 PreheaterMinTemperatureNumber = awenta_auros_ns.class_(
     "PreheaterMinTemperatureNumber", number.Number
 )
+DefrostTemperatureNumber = awenta_auros_ns.class_("DefrostTemperatureNumber", number.Number)
+DefrostHysteresisNumber = awenta_auros_ns.class_("DefrostHysteresisNumber", number.Number)
 SupplyFanSpeed1Number = awenta_auros_ns.class_("SupplyFanSpeed1Number", number.Number)
 SupplyFanSpeed2Number = awenta_auros_ns.class_("SupplyFanSpeed2Number", number.Number)
 SupplyFanSpeed3Number = awenta_auros_ns.class_("SupplyFanSpeed3Number", number.Number)
@@ -38,6 +40,8 @@ CONF_ECO_COOLING_TEMPERATURE = "eco_cooling_temperature"
 CONF_MANUAL_TEMPERATURE = "manual_temperature"
 CONF_AWAY_TEMPERATURE = "away_temperature"
 CONF_PREHEATER_MIN_TEMPERATURE = "preheater_min_temperature"
+CONF_DEFROST_TEMPERATURE = "defrost_temperature"
+CONF_DEFROST_HYSTERESIS = "defrost_hysteresis"
 CONF_SUPPLY_FAN_SPEED_1 = "supply_fan_speed_1"
 CONF_SUPPLY_FAN_SPEED_2 = "supply_fan_speed_2"
 CONF_SUPPLY_FAN_SPEED_3 = "supply_fan_speed_3"
@@ -137,6 +141,19 @@ CONFIG_SCHEMA = cv.Schema(
             entity_category=ENTITY_CATEGORY_CONFIG,
             icon="mdi:heating-coil",
         ),
+        cv.Optional(CONF_DEFROST_TEMPERATURE): number.number_schema(
+            DefrostTemperatureNumber,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            unit_of_measurement=UNIT_CELSIUS,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:snowflake-melt",
+        ),
+        cv.Optional(CONF_DEFROST_HYSTERESIS): number.number_schema(
+            DefrostHysteresisNumber,
+            unit_of_measurement=UNIT_CELSIUS,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+            icon="mdi:thermometer-plus",
+        ),
         cv.Optional(CONF_SUPPLY_FAN_SPEED_1): number.number_schema(
             SupplyFanSpeed1Number,
             unit_of_measurement=UNIT_PERCENT,
@@ -208,6 +225,16 @@ async def to_code(config: ConfigType) -> None:
         num = await number.new_number(conf, min_value=-10.0, max_value=10.0, step=0.5)
         await cg.register_parented(num, hub)
         cg.add(hub.set_preheater_min_temperature_number(num))
+
+    if conf := config.get(CONF_DEFROST_TEMPERATURE):
+        num = await number.new_number(conf, min_value=-10.0, max_value=10.0, step=0.5)
+        await cg.register_parented(num, hub)
+        cg.add(hub.set_defrost_temperature_number(num))
+
+    if conf := config.get(CONF_DEFROST_HYSTERESIS):
+        num = await number.new_number(conf, min_value=0.5, max_value=4.5, step=0.5)
+        await cg.register_parented(num, hub)
+        cg.add(hub.set_defrost_hysteresis_number(num))
 
     for key, setter in (
         (CONF_SUPPLY_FAN_SPEED_1, "set_supply_fan_speed_1_number"),
