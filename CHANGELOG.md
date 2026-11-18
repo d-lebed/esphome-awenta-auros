@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Changed project license from MIT to **Apache License 2.0** (`LICENSE`, `README.md`) and added GitHub Sponsor / Buy Me a Coffee link.
+
 ---
 
 ## [1.2.0] - 2026-11-15

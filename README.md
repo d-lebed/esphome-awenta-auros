@@ -1,5 +1,9 @@
 # ESPHome Awenta Pro Auros / Compit C14 Component
 
+[![Release](https://img.shields.io/github/v/release/d-lebed/esphome-awenta-auros?style=flat-square)](https://github.com/d-lebed/esphome-awenta-auros/releases)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](./LICENSE)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-support-FFDD00?style=flat-square&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/lebiadz)
+
 An ESPHome external component for **Awenta Pro Auros** heat-recovery ventilation units (recuperators) powered by the **Compit Aero 4A2** controller and **Compit NANO COLOR 2** touch panel over the proprietary **Compit C14 (RS-485 / M.Bus)** protocol.
 
 ## Key Features
@@ -441,4 +445,4 @@ This project is an **independent reverse-engineering effort** created solely for
 
 ## License
 
-MIT License — see [LICENSE](./LICENSE).
+Apache License 2.0 — see [LICENSE](./LICENSE).
